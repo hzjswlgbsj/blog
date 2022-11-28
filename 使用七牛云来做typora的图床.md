@@ -80,7 +80,7 @@ ${filepath%/*} 提取目录
 
 按照如下选择配置
 
-![](https://cdn.nlark.com/yuque/0/2021/jpeg/160765/1623496314286-59ad4389-870d-4376-982d-5b70c4e5b595.jpeg#averageHue=%23363636&crop=0&crop=0&crop=1&crop=1&height=960&id=KZktL&originHeight=960&originWidth=1400&originalType=binary&ratio=1&rotation=0&showTitle=false&size=0&status=done&style=none&title=&width=1400)
+![](https://lib.sixtyden.com/20210331094143_typora%E5%9B%BE%E7%89%87%E9%85%8D%E7%BD%AE.jpg)
 
 然后就可以点击左侧的 `验证图片上传选项` 了，会出现明明配置是正确的但是还是提示错误。你把他的错误信息复制出来，查看里面的图片地址是不是正确的，如果是能访问的就不用管他这个提示了。
 
