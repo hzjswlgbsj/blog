@@ -1,3 +1,5 @@
+# 使用七牛云来做 typora 的图床
+
 我算是 typora 的重度用户，但是我又需要将本地的一些文档或者博客文章发布到在线的博客。里面的图片是本地的，我每次都要自己手动再上传一次，这很不方便。最近突然发现七牛云有命令行工具 [qshell](https://github.com/qiniu/qshell)，而 `typora` 好像可以自己配置图片上传，我看了一下有一种方法就是 `命令` ，这下完美了。
 
 ### 1. 配置 qshell
@@ -31,7 +33,7 @@ qshell account <Your AccessKey> <Your SecretKey> <Your Name>
     QSHELL="/usr/local/bin/qshell"
     # 你的域名
     DOMAIN="https://xxx.xxx.com"
-  
+
     i=0
     for filepath in $@; do
       i=$((${i}+1))
@@ -44,13 +46,13 @@ qshell account <Your AccessKey> <Your SecretKey> <Your Name>
           if [ ${i} -eq 1 ]; then
             echo "Upload Success:"
           fi
-  
+
           echo "${DOMAIN}${PATH_PREFIX}/${filename}"
         else
           echo "upload ${filepath} failed!"
           exit 1;
        fi
-  
+
      else
        echo "${filepath} does not exist"
        exit 1;
