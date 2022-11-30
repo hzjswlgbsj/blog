@@ -459,8 +459,6 @@ this 关键字对于大多数新人来说都是理解的云里雾里，我也一
 
 ## 参考
 
----
-
 1. [MDN 官方对 this 描述](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/this)
 2. [JavaScript 的 this 原理](http://www.ruanyifeng.com/blog/2018/06/javascript-this.html)
 3. [ECMA-262-3 in detail. Chapter 3. This.](http://dmitrysoshnikov.com/ecmascript/chapter-3-this/)

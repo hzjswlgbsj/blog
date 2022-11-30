@@ -243,8 +243,6 @@ JavaScript 在对象的设计上确实跟其他语言不太一样，但是它完
 
 ## 参考
 
----
-
 1. [基于对象和面向对象](https://cloud.tencent.com/developer/article/1004486)
 2. [适合初学者的 JavaScript 面向对象](https://developer.mozilla.org/zh-CN/docs/Learn/JavaScript/Objects/Object-oriented_JS)
 3. [对象原型](https://developer.mozilla.org/zh-CN/docs/Learn/JavaScript/Objects/Object_prototypes)
