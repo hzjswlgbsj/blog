@@ -2,4 +2,4 @@
 
 ## 目录
 
-- [理解 JavaScript 对象](/docs/document-online/如何设计在线协同文档)
+- [如何设计在线协同文档](/docs/document-online/如何设计在线协同文档)
