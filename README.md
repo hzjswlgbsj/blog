@@ -6,7 +6,7 @@
 
 ## 🌾 JavaScript 恶补基础
 
-- [理解 JavaScript 对象](/docs/javascript-base-learn/理解JavaScript对象)
+- [理解 JavaScript 对象](javascript-base-learn/理解JavaScript对象)
 - [执行上下文](/docs/javascript-base-learn/执行上下文)
 - [变量对象](/docs/javascript-base-learn/变量对象)
 - [作用域链](/docs/javascript-base-learn/作用域链)
