@@ -65,19 +65,19 @@ sudo docker run hello-world
 
 这个操作是从 [docker hub](https://hub.docker.com/u/library) 里面拉取 hello-world 镜像，完成后可以查看当前的镜像列表
 
-```docker
+```bash
 docker image ls
 ```
 
 可以看到有 hello-world 这个镜像，运行它
 
-```docker
+```bash
 docker container run hello-world
 ```
 
 如果运行成功了，你可以在控制台看到如下输出
 
-```docker
+```bash
 Hello from Docker!
 This message shows that your installation appears to be working correctly.
 ```
@@ -139,7 +139,7 @@ Listening at http://localhost:39475
 
 1. 拉取一下最新的 Nginx
 
-```docker
+```bash
 docker pull nginx:latest
 ```
 
@@ -149,7 +149,7 @@ docker pull nginx:latest
 
 特别提醒：如果你的服务器上已经安装了 Nginx，我建议你要停掉
 
-```nginx
+```bash
 nginx -s stop
 ```
 
@@ -166,7 +166,7 @@ docker 里面的 Nginx 有可能会跟本机上的 Nginx 产生问题，比如�
 
 其实只需要执行如下命令即可在开启一个带有 Nginx 的 docker 容器
 
-```docker
+```bash
 docker container run \
 -d \
 -p 127.0.0.2:8080:80 \
@@ -190,7 +190,7 @@ nginx
 
 现在我们来拷贝一份 Nginx 的配置文件进行修改（注意：此时保持上面的 mynginx 容器处于运行，拷贝完后可以停止）。我是在 `/www/blog`目录下运行，也方便管理，这个 Nginx 只用于博客镜像的使用不污染服务器本身。
 
-```docker
+```bash
 docker container cp mynginx:/etc/nginx .
 ```
 
@@ -204,13 +204,13 @@ mv nginx conf
 
 现在可以把容器终止了。
 
-```docker
+```bash
 docker container stop mynginx
 ```
 
 OK！现在我们来映射 Docsify 的目录
 
-```docker
+```bash
 docker container run \
 -d \
 -p 8080:80 \
@@ -255,7 +255,7 @@ server {
 
 来到最后一步，修改容器启动命令
 
-```docker
+```bash
 docker container run \
 -d \
 -p 80:80 \
@@ -280,7 +280,7 @@ nginx
 
 首先你要看一下这个容器是否真的启动了
 
-```docker
+```bash
 docker container ps
 # 或者
 docker container ls
@@ -294,7 +294,7 @@ docker container ls
 
 如果还是找不到问题，最后给你杀手锏，看日志
 
-```docker
+```bash
 docker logs mynginx
 ```
 
@@ -462,8 +462,7 @@ exports.start = function () {
 现在来到 `/www/blog/webhook` 执行 PM2
 
 ```bash
-cd /www/blog/webhook
-pm2 start app.js
+cd /www/blog/webhook && pm2 start app.js
 ```
 
 看到如下图代表成了
