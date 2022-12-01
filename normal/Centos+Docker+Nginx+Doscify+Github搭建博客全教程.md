@@ -36,7 +36,7 @@ yum -y update
 2. 如果之前安装过，执行卸载
 
 ```bash
-yum remove docker  docker-common docker-selinux docker-engine
+yum remove docker docker-common docker-selinux docker-engine
 ```
 
 3. 查看可安装版本列表
@@ -65,22 +65,19 @@ sudo docker run hello-world
 
 这个操作是从 [docker hub](https://hub.docker.com/u/library) 里面拉取 hello-world 镜像，完成后可以查看当前的镜像列表
 
-```bash
+```docker
 docker image ls
 ```
 
 可以看到有 hello-world 这个镜像，运行它
 
-```bash
+```docker
 docker container run hello-world
 ```
 
 如果运行成功了，你可以在控制台看到如下输出
 
-```bash
-
-$ docker container run hello-world
-
+```docker
 Hello from Docker!
 This message shows that your installation appears to be working correctly.
 ```
@@ -142,7 +139,7 @@ Listening at http://localhost:39475
 
 1. 拉取一下最新的 Nginx
 
-```bash
+```docker
 docker pull nginx:latest
 ```
 
@@ -152,7 +149,7 @@ docker pull nginx:latest
 
 特别提醒：如果你的服务器上已经安装了 Nginx，我建议你要停掉
 
-```bash
+```nginx
 nginx -s stop
 ```
 
@@ -169,7 +166,7 @@ docker 里面的 Nginx 有可能会跟本机上的 Nginx 产生问题，比如�
 
 其实只需要执行如下命令即可在开启一个带有 Nginx 的 docker 容器
 
-```bash
+```docker
 docker container run \
 -d \
 -p 127.0.0.2:8080:80 \
@@ -193,7 +190,7 @@ nginx
 
 现在我们来拷贝一份 Nginx 的配置文件进行修改（注意：此时保持上面的 mynginx 容器处于运行，拷贝完后可以停止）。我是在 `/www/blog`目录下运行，也方便管理，这个 Nginx 只用于博客镜像的使用不污染服务器本身。
 
-```bash
+```docker
 docker container cp mynginx:/etc/nginx .
 ```
 
@@ -207,13 +204,13 @@ mv nginx conf
 
 现在可以把容器终止了。
 
-```bash
+```docker
 docker container stop mynginx
 ```
 
 OK！现在我们来映射 Docsify 的目录
 
-```bash
+```docker
 docker container run \
 -d \
 -p 8080:80 \
@@ -228,7 +225,7 @@ nginx
 
 我早就申请过域名和 ssl 证书了，我就直接配置 https 和域名一步到位了，如果你没有域名可以去各个平台申请， ssl 证书在腾讯云和阿里云上都可以申请和购买，当然你也可以直接搞自签名证书，非常简单你可以参考[DigitalOcean 的教程](https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-nginx-on-centos-7)，确保你机器上去你安装了 [OpenSSL](https://www.openssl.org/source/)。
 
-```bash
+```nginx
 # www.sixtyden.com （欢迎访问，也欢迎给我的github blog（https://github.com/hzjswlgbsj/blog）来个start）
 server {
   # 监听 443
@@ -258,7 +255,7 @@ server {
 
 来到最后一步，修改容器启动命令
 
-```bash
+```docker
 docker container run \
 -d \
 -p 80:80 \
@@ -283,9 +280,9 @@ nginx
 
 首先你要看一下这个容器是否真的启动了
 
-```bash
+```docker
 docker container ps
-或者
+# 或者
 docker container ls
 ```
 
@@ -297,7 +294,7 @@ docker container ls
 
 如果还是找不到问题，最后给你杀手锏，看日志
 
-```bash
+```docker
 docker logs mynginx
 ```
 
@@ -397,7 +394,7 @@ OK，准备工作就做好了，接下来开始写拉代码的 node 小代码。
 
 #### app.js
 
-```bash
+```javascript
 var server = require("./server");
 
 server.start();
@@ -405,55 +402,60 @@ server.start();
 
 #### server.js
 
-```bash
+```javascript
 const secret = "46a5dc72550e02ce2743bb7061e4b33bc195c541";
 const repo = "/www/blog/blog";
 
-const http = require('http');
-const crypto = require('crypto');
-const exec = require('child_process').exec;
-const fs = require('fs');
+const http = require("http");
+const crypto = require("crypto");
+const exec = require("child_process").exec;
+const fs = require("fs");
 
-exports.start = function(){
-  http.createServer(function (request, response) {
-    // 脚本
-    request.on('data', function (chunk) {
-      console.log('成功得到github回调响应', chunk)
-      let sig = "sha1=" + crypto.createHmac('sha1', secret).update(chunk.toString()).digest('hex');
-      if (request.headers['x-hub-signature'] == sig) {
-        exec('cd ' + repo + ' && git pull');
-      }
-      response.end();
-    });
+exports.start = function () {
+  http
+    .createServer(function (request, response) {
+      // 脚本
+      request.on("data", function (chunk) {
+        console.log("成功得到github回调响应", chunk);
+        let sig =
+          "sha1=" +
+          crypto
+            .createHmac("sha1", secret)
+            .update(chunk.toString())
+            .digest("hex");
+        if (request.headers["x-hub-signature"] == sig) {
+          exec("cd " + repo + " && git pull");
+        }
+        response.end();
+      });
 
-    // 显示成功页面
-    fs.readFile('./index.html', 'utf-8',function (err, data) {//读取内容
-      if (err) throw err;
-      response.writeHead(200, {"Content-Type": "text/html"});//注意这里
-      response.write(data);
-      response.end();
-    });
-
-  }).listen(8888);
-}
+      // 显示成功页面
+      fs.readFile("./index.html", "utf-8", function (err, data) {
+        //读取内容
+        if (err) throw err;
+        response.writeHead(200, { "Content-Type": "text/html" }); //注意这里
+        response.write(data);
+        response.end();
+      });
+    })
+    .listen(8888);
+};
 ```
 
 #### index.html
 
-```bash
-<!doctype html>
+```html
+<!DOCTYPE html>
 <html>
+  <head>
+    <title>index</title>
+    <meta content="IE=8" http-equiv="X-UA-Compatible" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  </head>
 
-<head>
-  <title>index</title>
-  <meta content="IE=8" http-equiv="X-UA-Compatible" />
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-</head>
-
-<body>
-  <h2>看到这个页面就表示 GitHub 的 Webhook 已经成功启动！</h2>
-</body>
-
+  <body>
+    <h2>看到这个页面就表示 GitHub 的 Webhook 已经成功启动！</h2>
+  </body>
 </html>
 ```
 
