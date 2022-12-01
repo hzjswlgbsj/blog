@@ -1,6 +1,6 @@
 # 博客搭建之 Docsify 美化篇
 
-上一篇文章我们介绍了如何使用 Docsify+Github 搭建博客，还没搭好的[赶紧去搭一个](https://www.sixtyden.com/#/docs/normal/Centos+Docker+Nginx+Doscify+Github%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%85%A8%E6%95%99%E7%A8%8B)，接下来是博客美化。
+上一篇文章我们介绍了如何使用 Docsify+Github 搭建博客，还没搭好的 [赶紧去搭一个](https://www.sixtyden.com/#/docs/normal/Centos+Docker+Nginx+Doscify+Github%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%85%A8%E6%95%99%E7%A8%8B)，接下来是博客美化。
 
 Docsify 默认的主题都是极简风，是 vuepress 主题的，需要对布局和样式进行调整，增加一些插件，本文介绍的是我自己喜欢的风格，也是极简风，只是修改了一些样式。
 
@@ -17,7 +17,7 @@ cover 页还是要定制一下
 ```
 
 先看效果
-![image.png](https://cdn.nlark.com/yuque/0/2022/png/160765/1669687223206-1b646fa5-41fa-4419-b546-172dd36c0969.png#averageHue=%232c7a92&clientId=u831a8b6a-85d5-4&crop=0&crop=0&crop=1&crop=1&from=markdown&id=YoaQL&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1380&originWidth=2874&originalType=url&ratio=1&rotation=0&showTitle=false&size=2667837&status=done&style=none&taskId=u5bd6d82d-480e-43bd-a31d-9028c1c0f32&title=)
+![image.png](https://lib.sixtyden.com/docsify_coverpage.jpg)
 首先在根目录新建 `_coverpage.md`，内容如下（注意，这里是可以写 HTML 的 Docsify 会解析）
 **\_coverpage.md**
 

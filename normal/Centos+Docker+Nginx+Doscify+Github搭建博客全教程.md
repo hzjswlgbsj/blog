@@ -361,7 +361,7 @@ cat /root/.ssh/id_rsa.pub
 ### 配置 Webhook
 
 在 GitHub 中找到你的博客项目，然后点击 `Settings`，在右侧找到 `Webhook`，添加你的 webhook，如图所示：
-,![image.png](https://cdn.nlark.com/yuque/0/2022/png/160765/1669567055815-c6ff942d-f842-446f-8521-bb237060f80e.png#averageHue=%2314171d&clientId=u2958de42-8fe7-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=639&id=u22836cff&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1278&originWidth=1572&originalType=binary&ratio=1&rotation=0&showTitle=false&size=221633&status=done&style=none&taskId=uf0a26b4f-e984-4e23-b4d0-fa0ffff6674&title=&width=786)
+![image.png](https://lib.sixtyden.com/webhook.png)
 Payload URL 填写 `http://your_ip:8888`，我使用了 `8888` 端口，Content type 选择 application/json，这个 Secret 一定要填写，为了安全起见，也请你阅读一下文档，GitHub 会根据这个字符串加密，然后在返回头信息里面返回一个 `x-hub-signature`（现在建议使用 x-hub-signature-256 了）。在后面的代码里面我们要验证这个。
 
 此时 GitHub 会提示你填写的这个回调地址是错误的，不用管他，毕竟代码还没写， node 服务也还没起来。
@@ -467,11 +467,11 @@ pm2 start app.js
 ```
 
 看到如下图代表成了
-![image.png](https://cdn.nlark.com/yuque/0/2022/png/160765/1669566729391-4a77d43e-a435-401b-8192-4dce62b5278e.png#averageHue=%2312171a&clientId=u2958de42-8fe7-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=110&id=ua0b7cc09&margin=%5Bobject%20Object%5D&name=image.png&originHeight=220&originWidth=2404&originalType=binary&ratio=1&rotation=0&showTitle=false&size=564984&status=done&style=none&taskId=u7ad96744-cb74-4229-9da7-3870f4f2f9f&title=&width=1202)
+![image.png](https://lib.sixtyden.com/pm2_view.png)
 此时你可以在浏览器中访问 `http://your_ip:8888/` 端口你可以自己去代码里面修改，如果看到 `index.html`中的恭喜页就代表一切就绪
 
 现在，你去博客的仓库中再次去查看 Webhook，在 Recent Deliveries 中已经可以看到回调了，如果没有成功你需要检查一下你的 node 服务。
-![image.png](https://cdn.nlark.com/yuque/0/2022/png/160765/1669567601069-7c03ca42-135e-4367-adad-68d9efa2aaad.png#averageHue=%2314181f&clientId=u2958de42-8fe7-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=541&id=u428af762&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1082&originWidth=2428&originalType=binary&ratio=1&rotation=0&showTitle=false&size=317491&status=done&style=none&taskId=u4ed07f29-80f5-4a5c-8613-ed2790e8887&title=&width=1214)
+![image.png](https://lib.sixtyden.com/webhook_rencent.png)
 现在去修改仓库的代码，然后 push ，你就能发现服务器上面的 `/www/blog/blog` 文件夹里面的文件自动更新了。
 
 至此，整个搭建过程就全部完成了，之后我会继续出一篇如何美化和组织 Docsify 博客。
