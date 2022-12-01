@@ -1,5 +1,7 @@
 # 博客搭建之 Docsify 美化篇
 
+上一篇文章我们介绍了如何使用 Docsify+Github 搭建博客，还没搭好的[赶紧去搭一个](https://www.sixtyden.com/#/docs/normal/Centos+Docker+Nginx+Doscify+Github%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%85%A8%E6%95%99%E7%A8%8B)，接下来是博客美化。
+
 Docsify 默认的主题都是极简风，是 vuepress 主题的，需要对布局和样式进行调整，增加一些插件，本文介绍的是我自己喜欢的风格，也是极简风，只是修改了一些样式。
 
 ## 增加 Cover
