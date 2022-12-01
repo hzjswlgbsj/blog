@@ -30,6 +30,8 @@
 
 ## 🍀 技术杂文
 
+- [Centos+Docker+Nginx+Doscify+Github 搭建博客全教程](normal/Centos+Docker+Nginx+Doscify+Github搭建博客全教程.md)
+- [博客搭建之 Docsify 美化篇](normal/博客搭建之Docsify美化篇.md)
 - [使用七牛云来做 typora 的图床](normal/使用七牛云来做typora的图床.md)
 - [ssh 免密码登陆服务器](normal/ssh免密码登陆服务器.md)
 
