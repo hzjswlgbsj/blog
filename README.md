@@ -64,19 +64,19 @@
 
 ### Guides
 
-- [why-quill](/quill-translate/Guides/1.why-quill.md)
-- [how-to-customize-quill](/quill-translate/Guides/2.how-to-customize-quill.md)
-- [adding-quill-to-your-build-pipeline](/quill-translate/Guides/3.adding-quill-to-your-build-pipeline.md)
-- [build-a-custom-module](/quill-translate/Guides/4.build-a-custom-module.md)
-- [cloning-medium-with-parchment](/quill-translate/Guides/5.cloning-medium-with-parchment.md)
-- [designing-the-delta-format](/quill-translate/Guides/6.designing-the-delta-format.md)
-- [comparison-with-other-rich-text-editors](/quill-translate/Guides/7.comparison-with-other-rich-text-editors.md)
-- [upgrading-to-1.0](/quill-translate/Guides/8.upgrading-to-1.0.md)
-- [upgrading-to-2.0](/quill-translate/Guides/9.upgrading-to-2.0.md)
+- [why-quill](quill-translate/Guides/1.why-quill.md)
+- [how-to-customize-quill](quill-translate/Guides/2.how-to-customize-quill.md)
+- [adding-quill-to-your-build-pipeline](quill-translate/Guides/3.adding-quill-to-your-build-pipeline.md)
+- [build-a-custom-module](quill-translate/Guides/4.build-a-custom-module.md)
+- [cloning-medium-with-parchment](quill-translate/Guides/5.cloning-medium-with-parchment.md)
+- [designing-the-delta-format](quill-translate/Guides/6.designing-the-delta-format.md)
+- [comparison-with-other-rich-text-editors](quill-translate/Guides/7.comparison-with-other-rich-text-editors.md)
+- [upgrading-to-1.0](quill-translate/Guides/8.upgrading-to-1.0.md)
+- [upgrading-to-2.0](quill-translate/Guides/9.upgrading-to-2.0.md)
 
 ### Parchment
 
-- [parchment](/quill-translate/Parchment/parchment.md)
+- [parchment](quill-translate/Parchment/parchment.md)
 
 ## 🌾 翻译
 
