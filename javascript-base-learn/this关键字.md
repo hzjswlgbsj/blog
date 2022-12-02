@@ -6,7 +6,7 @@
 
 this 是在函数被调用的时候才被确定的，他跟执行上下文相关内容紧密相连，我建议你先阅读《执行上下文》、《变量对象》和《作用域链》后，再来阅读本文。
 
-> **重要提醒**：我在学习这部分内容的时候查找了大量资料，包括网上的，《JavaScript 高级程序设计》的 7.2.2 节以及《你不知道的 JavaScript 上》的第二部分，[MDN 关于 This 的文档](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/this) 等几乎所有的讲关于 This 的文章或者书籍都是从 This 的调用方式或位置的角度来理解的（本文也是如此），但是[这里有大佬从 Ecmascript 规范的角度去解读 This](https://github.com/mqyqingfeng/Blog/issues/7)，思路清奇值得拜读！我建议阅读完本文后一定要去读读这篇文章！
+> **重要提醒**：我在学习这部分内容的时候查找了大量资料，包括网上的，《JavaScript 高级程序设计》的 7.2.2 节以及《你不知道的 JavaScript 上》的第二部分，[MDN 关于 This 的文档](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/this) 等几乎所有的讲关于 This 的文章或者书籍都是从 This 的调用方式或位置的角度来理解的（本文也是如此），但是 [这里有大佬从 Ecmascript 规范的角度去解读 This](https://github.com/mqyqingfeng/Blog/issues/7)，思路清奇值得拜读！我建议阅读完本文后一定要去读读这篇文章！
 
 ## this 是什么
 
@@ -22,7 +22,7 @@ this 是在**运行时**基于函数的执行环境绑定的：在全局函数�
 
 **MDN：**
 
-在绝大多数情况下，函数的调用方式决定了 `this` 的值（运行时绑定）。`this` 不能在执行期间被赋值，并且在每次函数被调用时 `this` 的值也可能会不同。ES5 引入了 [bind](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function/bind) 方法来设置函数的 `this` 值，而不用考虑函数如何被调用的。ES2015 引入了[箭头函数](https://wiki.developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Functions/Arrow_functions)，箭头函数不提供自身的 this 绑定（`this` 的值将保持为闭合词法上下文的值）。
+在绝大多数情况下，函数的调用方式决定了 `this` 的值（运行时绑定）。`this` 不能在执行期间被赋值，并且在每次函数被调用时 `this` 的值也可能会不同。ES5 引入了 [bind](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function/bind) 方法来设置函数的 `this` 值，而不用考虑函数如何被调用的。ES2015 引入了 [箭头函数](https://wiki.developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Functions/Arrow_functions)，箭头函数不提供自身的 this 绑定（`this` 的值将保持为闭合词法上下文的值）。
 
 可以认为 this 值是一个与执行上下文相关的特殊对象。因此，我觉得可以将之称为上下文对象(即，在其中激活执行上下文的对象)。任何对象都可以用作上下文的这个值，但需要注意的是，在之前的文章《执行上下文》中提到 this 值是执行上下文（EC，execution context）的属性，而不是变量对象（VO，veriable object）的属性。
 
@@ -30,7 +30,7 @@ this 是在运行时基于函数执行环境绑定的，这一点非常重要，
 
 下面我们也从不同的执行环境来看看对应的 this 值。
 
-> 下文内容翻译自[ECMA-262-3 in detail. Chapter 3. This.](http://dmitrysoshnikov.com/ecmascript/chapter-3-this/) ，接下来的内容非常精彩，如果有我觉得难理解的地方我会给出更简单的解释。
+> 下文内容翻译自 [ECMA-262-3 in detail. Chapter 3. This.](http://dmitrysoshnikov.com/ecmascript/chapter-3-this/) ，接下来的内容非常精彩，如果有我觉得难理解的地方我会给出更简单的解释。
 
 ## 全局环境中的 this
 
@@ -343,9 +343,9 @@ foo.bar(); // Reference, OK => foo
 
 第一个例子很明显———明显的引用类型，结果是，this 为 base 对象，即 foo。
 
-在第二个例子中，分组操作符(译者注：这里的分组操作符就是指 foo.bar 外面的括号"()")没有实际意义，想想上面提到的，从引用类型中获得一个对象真正的值的方法，如 GetValue (参考[11.1.6](http://bclary.com/2004/11/07/#a-11.1.6))。相应的，在分组操作的返回值中———我们得到的仍是一个引用类型。这就是 this 的值为什么再次被设为 base 对象，即 foo。
+在第二个例子中，分组操作符(译者注：这里的分组操作符就是指 foo.bar 外面的括号"()")没有实际意义，想想上面提到的，从引用类型中获得一个对象真正的值的方法，如 GetValue (参考 [11.1.6](http://bclary.com/2004/11/07/#a-11.1.6))。相应的，在分组操作的返回值中———我们得到的仍是一个引用类型。这就是 this 的值为什么再次被设为 base 对象，即 foo。
 
-第三个例子中，与分组操作符不同，赋值操作符调用了 GetValue 方法(参考[11.13.1](http://bclary.com/2004/11/07/#a-11.13.1)的第三步)。返回的结果已经是函数对象（不是引用类型），这意味着 this 的值被设为 null，实际最终结果是被设置为 global 对象。
+第三个例子中，与分组操作符不同，赋值操作符调用了 GetValue 方法(参考 [11.13.1](http://bclary.com/2004/11/07/#a-11.13.1) 的第三步)。返回的结果已经是函数对象（不是引用类型），这意味着 this 的值被设为 null，实际最终结果是被设置为 global 对象。
 
 第四个和第五个也是一样——逗号操作符和逻辑操作符（OR）调用了 GetValue 方法，相应地，我们失去了引用类型的值而得到了函数类型的值，所以 this 的值再次被设为 global 对象。
 
@@ -412,7 +412,7 @@ var eReference = {
 };
 ```
 
-同样的情况出现在[命名函数](http://dmitrysoshnikov.com/ecmascript/chapter-5-functions/#feature-of-named-function-expression-nfe)（函数的更多细节参考[Chapter 5. Functions](http://dmitrysoshnikov.com/ecmascript/ru-chapter-5-functions/)）的递归调用中。在函数的第一次调用中，base 对象是父活动对象（或全局对象），在递归调用中，base 对象应该是存储着函数表达式可选名称的特定对象。但是，在这种情况下，`this` 的值也总是被设置为 global。
+同样的情况出现在 [命名函数](http://dmitrysoshnikov.com/ecmascript/chapter-5-functions/#feature-of-named-function-expression-nfe)（函数的更多细节参考 [Chapter 5. Functions](http://dmitrysoshnikov.com/ecmascript/ru-chapter-5-functions/)）的递归调用中。在函数的第一次调用中，base 对象是父活动对象（或全局对象），在递归调用中，base 对象应该是存储着函数表达式可选名称的特定对象。但是，在这种情况下，`this` 的值也总是被设置为 global。
 
 ```javascript
 (function foo(bar) {

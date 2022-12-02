@@ -223,7 +223,7 @@ nginx
 
 趁热打铁，我们在 Nginx 配置文件中加入博客的配置，这里是一份我的配置文件，我在里面加了详细注释应该不需要过多解释。
 
-我早就申请过域名和 ssl 证书了，我就直接配置 https 和域名一步到位了，如果你没有域名可以去各个平台申请， ssl 证书在腾讯云和阿里云上都可以申请和购买，当然你也可以直接搞自签名证书，非常简单你可以参考[DigitalOcean 的教程](https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-nginx-on-centos-7)，确保你机器上去你安装了 [OpenSSL](https://www.openssl.org/source/)。
+我早就申请过域名和 ssl 证书了，我就直接配置 https 和域名一步到位了，如果你没有域名可以去各个平台申请， ssl 证书在腾讯云和阿里云上都可以申请和购买，当然你也可以直接搞自签名证书，非常简单你可以参考 [DigitalOcean 的教程](https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-nginx-on-centos-7)，确保你机器上去你安装了 [OpenSSL](https://www.openssl.org/source/)。
 
 ```nginx
 # www.sixtyden.com （欢迎访问，也欢迎给我的github blog（https://github.com/hzjswlgbsj/blog）来个start）

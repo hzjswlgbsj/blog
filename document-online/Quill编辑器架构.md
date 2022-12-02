@@ -19,11 +19,11 @@ quill 的实现主要是走的第二个方向，Selection 对象和 Rang 对象�
 
 - **Inline Blot**：行级格式化 Blot 的基本实现。默认格式的行级 Blot 或者用一个 Blot 包裹自己，或者将它传递给合适的子节点。
 
-- **Embed Blot**：非文本节点的基本实现，可以被格式化。其对应的额 DOM 节点通常是一个[Void 元素](https://html.spec.whatwg.org/multipage/syntax.html#void-elements)，也可以是一个[正常元素](https://html.spec.whatwg.org/multipage/syntax.html#normal-elements)。在这些情况下，Parchment 将不会操作或者感知到元素的子元素，正确的执行 Blot 的`index()`和`position()`方法对于正确的光标显示/选区是很重要的。
+- **Embed Blot**：非文本节点的基本实现，可以被格式化。其对应的额 DOM 节点通常是一个 [Void 元素](https://html.spec.whatwg.org/multipage/syntax.html#void-elements)，也可以是一个 [正常元素](https://html.spec.whatwg.org/multipage/syntax.html#normal-elements)。在这些情况下，Parchment 将不会操作或者感知到元素的子元素，正确的执行 Blot 的`index()`和`position()`方法对于正确的光标显示/选区是很重要的。
 
 - **Scroll**：Parchment 文档的根节点。不能够被格式化。
 
-- **Attributors**：Attributors 是一种轻量级的格式化方式。它们的 DOM 对应的是[属性(Attribute)](https://html.spec.whatwg.org/multipage/syntax.html#attributes-0)。像 DOM 属性和节点的关系一样，Attributors 也属于 Blots。调用[Inline](/docs/quill-translate/Parchment/parchment?id=inline-blot)或者[Block](docs/quill-translate/Parchment/parchment?id=block-blot) Blot 的`formats()`方法将会返回相应的 DOM 节点的格式（如果有的话）以及 DOM 节点属性表示的格式（如果有的话）。
+- **Attributors**：Attributors 是一种轻量级的格式化方式。它们的 DOM 对应的是 [属性(Attribute)](https://html.spec.whatwg.org/multipage/syntax.html#attributes-0)。像 DOM 属性和节点的关系一样，Attributors 也属于 Blots。调用 [Inline](/docs/quill-translate/Parchment/parchment?id=inline-blot) 或者 [Block](docs/quill-translate/Parchment/parchment?id=block-blot) Blot 的`formats()`方法将会返回相应的 DOM 节点的格式（如果有的话）以及 DOM 节点属性表示的格式（如果有的话）。
 
 quill 还实现了 `Dalta` 来做数据模型，将编辑器的产出相比其他编辑器多一种固定的数据结构 ：
 
@@ -278,7 +278,7 @@ mimetypes: ["image/png", "image/jpeg"];
 
 首先，在 `core/quill.js` 会根据我们传入的一个 DOM 来作为编辑器的容器，然后会根据 `scroll`类型的 blot 来创建根 blot。`scroll` blot 会创建一个 `div`的节点，并使用 `contenteditable` 属性来控制当前环境是否可编辑。自此，一个可以编辑的根节点就创建完成了。
 
-然后，以后出现的每一个动作都会使用[MutationObserver](https://developer.mozilla.org/zh-CN/docs/Web/API/MutationObserver) 这个 API 来完成。MutationObserver 接口提供了监视对 DOM 树所做更改的能力。[MutationObserver()](https://developer.mozilla.org/zh-CN/docs/Web/API/MutationObserver/MutationObserver)构造函数创建并返回一个新的 `MutationObserver` 它会在指定的 DOM 发生变化时被调用。
+然后，以后出现的每一个动作都会使用 [MutationObserver](https://developer.mozilla.org/zh-CN/docs/Web/API/MutationObserver) 这个 API 来完成。MutationObserver 接口提供了监视对 DOM 树所做更改的能力。[MutationObserver()](https://developer.mozilla.org/zh-CN/docs/Web/API/MutationObserver/MutationObserver)构造函数创建并返回一个新的 `MutationObserver` 它会在指定的 DOM 发生变化时被调用。
 
 当`MutationObserver.observe()` 收到 DOM 的变化之后，便会触发回调。Parchment 中的 Scroll blot 做了 MutationObserver 的相关配置。他会在回调触发的时候，调用它的`update`方法，然后最终在`parent`中使用原生的`insertBefore()` 方法创建出 DOM。
 
@@ -296,7 +296,7 @@ Link -> quill/Inline -> parchment/Inline -> parchment/ParentBlot -> parchment/Sh
 
 ## Quill 的事件流
 
-在上面的文档流中我们提到的[MutationObserver](https://developer.mozilla.org/zh-CN/docs/Web/API/MutationObserver) ，整个 quill 内部的 dom 变化都是依赖这个 API 来实现，在`quill/blot/scroll`中的 `update()` 方法中会监听一个`SCROLL_UPDATE`, 这个事件代表，作为根 blot 的 scroll 发生了变化：
+在上面的文档流中我们提到的 [MutationObserver](https://developer.mozilla.org/zh-CN/docs/Web/API/MutationObserver) ，整个 quill 内部的 dom 变化都是依赖这个 API 来实现，在`quill/blot/scroll`中的 `update()` 方法中会监听一个`SCROLL_UPDATE`, 这个事件代表，作为根 blot 的 scroll 发生了变化：
 
 ```javascript
 public update(mutations?: any) {
@@ -341,11 +341,11 @@ this.emitter.on(Emitter.events.SCROLL_UPDATE, (source, mutations) => {
 
 ## Parchment
 
-关于 Parchment 的设计，我们可以看一下[这里](/docs/quill-translate/Parchment/parchment)。
+关于 Parchment 的设计，我们可以看一下 [这里](/docs/quill-translate/Parchment/parchment)。
 
 ## Delta
 
-关于 Delta 的设计，我们可以看一下[这里](/docs/quill-translate/Documentation/5.delta)和[这里](/docs/quill-translate/Guides/6.designing-the-delta-format)。
+关于 Delta 的设计，我们可以看一下 [这里](/docs/quill-translate/Documentation/5.delta) 和 [这里](/docs/quill-translate/Guides/6.designing-the-delta-format)。
 
 ## 相关链接
 

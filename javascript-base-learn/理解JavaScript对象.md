@@ -6,7 +6,7 @@
 - 为什么 JavaScript（直到 ES6）有对象的概念，但是却没有像其他的语言那样，有类的概念呢
 - 为什么在 JavaScript 对象里面可以自由添加属性，而其他语言不能
 
-我在网上看到有些人强调：JavaScript 不是**面向对象**的语言，而是**基于对象**的语言。但是既然[官方](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/A_re-introduction_to_JavaScript)都已经说了 JavaScript 是一门面向对象的语言（在很多经典书籍中也提到了这个，比如《JavaScript 高级程序设计》第 6 章的 6.4 小结），我想我们有必要深入了解一下 JavaScript 的对象设计。
+我在网上看到有些人强调：JavaScript 不是**面向对象**的语言，而是**基于对象**的语言。但是既然 [官方](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/A_re-introduction_to_JavaScript) 都已经说了 JavaScript 是一门面向对象的语言（在很多经典书籍中也提到了这个，比如《JavaScript 高级程序设计》第 6 章的 6.4 小结），我想我们有必要深入了解一下 JavaScript 的对象设计。
 
 > 注意：昨天我同事说中文的原文翻译添加了翻译者自己的理解，我不由的要提醒，我写的文章也是个人理解，请大家带着辨证的眼光看待！
 >
@@ -24,7 +24,7 @@
 
 那我们还是要先说说什么是对象吧，中文中的“对象”我很容易想到男女朋友这个方面，毕竟周围的人都被父母催婚了。但是，Object 在英文中是一切事物的总称，这和面向对象的抽象思维有互通之处吧。
 
-我们应该知道对象这个词语不是计算机领域凭空造出来的概念，它是跟随人类思维模式产生的一种抽象，所以说面向对象被普遍认为是更接近于人类思维的一种[编程范式](https://zh.wikipedia.org/wiki/编程范型)。
+我们应该知道对象这个词语不是计算机领域凭空造出来的概念，它是跟随人类思维模式产生的一种抽象，所以说面向对象被普遍认为是更接近于人类思维的一种 [编程范式](https://zh.wikipedia.org/wiki/编程范型)。
 
 在《面向对象分析与设计》这本书中，Grady Booch (格雷迪·布奇) 为我们做了总结什么是对象，他认为对象应该是下列事物之一：
 
@@ -64,7 +64,7 @@ JavaScript 抽象对象选择的是比较冷门的方式，那就是**原型**�
 
 对于第一个特征，对象具有标识性。一般来说，各种语言的对象唯一标识性都是用内存地址来体现的，对象具有唯一标识的内存地址，所以对象具有唯一标识性。
 
-所以 JavaScript 程序员都知道，任何对象都是不相等的（**注意**：null 就是没有（设置），null 并不是对象，将值设置为 null 的变量也不是对象，关于 null 你可以阅读[更多](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/null)）。比如下面的 o1 和 o2 是不相等的：
+所以 JavaScript 程序员都知道，任何对象都是不相等的（**注意**：null 就是没有（设置），null 并不是对象，将值设置为 null 的变量也不是对象，关于 null 你可以阅读 [更多](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/null)）。比如下面的 o1 和 o2 是不相等的：
 
 ```javascript
 var o1 = {a: 1}
