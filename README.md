@@ -37,6 +37,8 @@
 
 ## 🍁 Quill 文档翻译
 
+更好的阅读体验，[请戳](https://github.com/hzjswlgbsj/quill-document-chinese)
+
 ### Documentation
 
 - [API](quill-translate/Documentation/API/README.md)
