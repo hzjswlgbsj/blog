@@ -23,7 +23,7 @@ quill 的实现主要是走的第二个方向，Selection 对象和 Rang 对象�
 
 - **Scroll**：Parchment 文档的根节点。不能够被格式化。
 
-- **Attributors**：Attributors 是一种轻量级的格式化方式。它们的 DOM 对应的是[属性(Attribute)](https://html.spec.whatwg.org/multipage/syntax.html#attributes-0)。像 DOM 属性和节点的关系一样，Attributors 也属于 Blots。调用[Inline](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Parchment/parchment.md#inline-blot)或者[Block](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Parchment/parchment.md#block-blot) Blot 的`formats()`方法将会返回相应的 DOM 节点的格式（如果有的话）以及 DOM 节点属性表示的格式（如果有的话）。
+- **Attributors**：Attributors 是一种轻量级的格式化方式。它们的 DOM 对应的是[属性(Attribute)](https://html.spec.whatwg.org/multipage/syntax.html#attributes-0)。像 DOM 属性和节点的关系一样，Attributors 也属于 Blots。调用[Inline](/docs/quill-translate/Parchment/parchment?id=inline-blot)或者[Block](docs/quill-translate/Parchment/parchment?id=block-blot) Blot 的`formats()`方法将会返回相应的 DOM 节点的格式（如果有的话）以及 DOM 节点属性表示的格式（如果有的话）。
 
 quill 还实现了 `Dalta` 来做数据模型，将编辑器的产出相比其他编辑器多一种固定的数据结构 ：
 
@@ -341,11 +341,11 @@ this.emitter.on(Emitter.events.SCROLL_UPDATE, (source, mutations) => {
 
 ## Parchment
 
-关于 Parchment 的设计，我们可以看一下[这里](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Parchment/parchment.md)。
+关于 Parchment 的设计，我们可以看一下[这里](/docs/quill-translate/Parchment/parchment)。
 
 ## Delta
 
-关于 Delta 的设计，我们可以看一下[这里](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Documentation/5.%20delta.md)和[这里](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Guides/6.%20designing-the-delta-format.md)。
+关于 Delta 的设计，我们可以看一下[这里](/docs/quill-translate/Documentation/5.delta)和[这里](/docs/quill-translate/Guides/6.designing-the-delta-format)。
 
 ## 相关链接
 

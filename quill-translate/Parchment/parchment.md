@@ -1,20 +1,20 @@
 # Parchment
 
-Parchment是[Quill](https://github.com/quilljs/quill)的文档模型。它是一个并行的树结构，并且提供对内容的编辑（如Quill）的功能。一个Parchment树是由[Blots](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Parchment/parchment.md#blots)组成的，它反映了一个DOM对应的节点。Blots能够提供结构、格式和内容或者只有内容。[Attributors](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Parchment/parchment.md#attributors)能够提供轻量级的格式化信息。
+Parchment 是[Quill](https://github.com/quilljs/quill)的文档模型。它是一个并行的树结构，并且提供对内容的编辑（如 Quill）的功能。一个 Parchment 树是由[Blots](/docs/quill-translate/Parchment/parchment?id=blots)组成的，它反映了一个 DOM 对应的节点。Blots 能够提供结构、格式和内容或者只有内容。[Attributors](/docs/quill-translate/Parchment/parchment?id=attributors)能够提供轻量级的格式化信息。
 
-> 注意：你不应该使用`new`来实例化一个Blot。这个方法可能阻止Blot的必要生命周期。使用[注册](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Parchment/parchment.md#registry)的`create()`方法代替。
+> 注意：你不应该使用`new`来实例化一个 Blot。这个方法可能阻止 Blot 的必要生命周期。使用[注册](/docs/quill-translate/Parchment/parchment?id=registry)的`create()`方法代替。
 
 ```bash
 npm install --save parchment
 ```
 
-可以查看[Cloning Medium with Parchment](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Guides/5.%20cloning-medium-with-parchment.md)来了解Quill是如何使用Parchment的文档模型的。
+可以查看[Cloning Medium with Parchment](/docs/quill-translate/Guides/5.%20cloning-medium-with-parchment)来了解 Quill 是如何使用 Parchment 的文档模型的。
 
 ## Blots
 
-Blots是Parchment文档的基本组成部分。提供了几个基本的实现，如：[Block](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Parchment/parchment.md#block-blot)、[Inline](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Parchment/parchment.md#inline-blot)和[Embed](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Parchment/parchment.md#embed-blot)。一般来说，你会想扩展其中的一个，而不是从头开始构建。实现之后，需要在使用之前进行[注册](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Parchment/parchment.md#registry)。
+Blots 是 Parchment 文档的基本组成部分。提供了几个基本的实现，如：[Block](/docs/quill-translate/Parchment/parchment?id=block-blot)、[Inline](/docs/quill-translate/Parchment/parchment?id=inline-blot)和[Embed](/docs/quill-translate/Parchment/parchment?id=embed-blot)。一般来说，你会想扩展其中的一个，而不是从头开始构建。实现之后，需要在使用之前进行[注册](/docs/quill-translate/Parchment/parchment?id=registry)。
 
-一个最基本的Blots必须使用一个静态的blotName来命名，并且有一个与之相关联的tagName或者className。如果一个Blot是通过标签和类定义的，类是第一优先级，标签被用作备用。Blots还必须有一个[范围](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Parchment/parchment.md#registry)，来确定他是内联（inline）还是分块（block）。
+一个最基本的 Blots 必须使用一个静态的 blotName 来命名，并且有一个与之相关联的 tagName 或者 className。如果一个 Blot 是通过标签和类定义的，类是第一优先级，标签被用作备用。Blots 还必须有一个[范围](/docs/quill-translate/Parchment/parchment?id=registry)，来确定他是内联（inline）还是分块（block）。
 
 ```js
 class Blot {
@@ -110,27 +110,27 @@ class Blot {
 
 ## Example
 
-表示链接的Blot实现，该链接是父级，内联范围和格式表。
+表示链接的 Blot 实现，该链接是父级，内联范围和格式表。
 
 ```js
-import Parchment from 'parchment';
+import Parchment from "parchment";
 
 class LinkBlot extends Parchment.Inline {
   static create(url) {
     let node = super.create();
-    node.setAttribute('href', url);
-    node.setAttribute('target', '_blank');
-    node.setAttribute('title', node.textContent);
+    node.setAttribute("href", url);
+    node.setAttribute("target", "_blank");
+    node.setAttribute("title", node.textContent);
     return node;
   }
 
   static formats(domNode) {
-    return domNode.getAttribute('href') || true;
+    return domNode.getAttribute("href") || true;
   }
 
   format(name, value) {
-    if (name === 'link' && value) {
-      this.domNode.setAttribute('href', value);
+    if (name === "link" && value) {
+      this.domNode.setAttribute("href", value);
     } else {
       super.format(name, value);
     }
@@ -138,37 +138,37 @@ class LinkBlot extends Parchment.Inline {
 
   formats() {
     let formats = super.formats();
-    formats['link'] = LinkBlot.formats(this.domNode);
+    formats["link"] = LinkBlot.formats(this.domNode);
     return formats;
   }
 }
-LinkBlot.blotName = 'link';
-LinkBlot.tagName = 'A';
+LinkBlot.blotName = "link";
+LinkBlot.tagName = "A";
 
 Parchment.register(LinkBlot);
 ```
 
-Quill再其[源码](https://github.com/quilljs/quill/tree/develop/formats)中提供了很多实现的示例。
+Quill 再其[源码](https://github.com/quilljs/quill/tree/develop/formats)中提供了很多实现的示例。
 
 ## Block Blot
 
-块类型格式化Blot的基本实现。默认格式的块级Blot会替代Blot的适当部分。
+块类型格式化 Blot 的基本实现。默认格式的块级 Blot 会替代 Blot 的适当部分。
 
 ## Inline Blot
 
-行级格式化Blot的基本实现。默认格式的行级Blot或者用一个Blot包裹自己，或者将它传递给合适的子节点。
+行级格式化 Blot 的基本实现。默认格式的行级 Blot 或者用一个 Blot 包裹自己，或者将它传递给合适的子节点。
 
 ## Embed Blot
 
-非文本节点的基本实现，可以被格式化。其对应的额DOM节点通常是一个[Void元素](https://html.spec.whatwg.org/multipage/syntax.html#void-elements)，也可以是一个[正常元素](https://html.spec.whatwg.org/multipage/syntax.html#normal-elements)。在这些情况下，Parchment将不会操作或者感知到元素的子元素，正确的执行Blot的`index()`和`position()`方法对于正确的光标显示/选区是很重要的。
+非文本节点的基本实现，可以被格式化。其对应的额 DOM 节点通常是一个[Void 元素](https://html.spec.whatwg.org/multipage/syntax.html#void-elements)，也可以是一个[正常元素](https://html.spec.whatwg.org/multipage/syntax.html#normal-elements)。在这些情况下，Parchment 将不会操作或者感知到元素的子元素，正确的执行 Blot 的`index()`和`position()`方法对于正确的光标显示/选区是很重要的。
 
 ## Scroll
 
-Parchment文档的根节点。不能够被格式化。
+Parchment 文档的根节点。不能够被格式化。
 
 ## Attributors
 
-Attributors是一种轻量级的格式话方式。它们的DOM对应的是[属性(Attribute)](https://html.spec.whatwg.org/multipage/syntax.html#attributes-0)。像DOM属性和节点的关系一样，Attributors也属于Blots。调用[Inline](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Parchment/parchment.md#inline-blot)或者[Block](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Parchment/parchment.md#block-blot) Blot的`formats()`方法将会返回相应的DOM节点的格式（如果有的话）以及DOM节点属性表示的格式（如果有的话）。
+Attributors 是一种轻量级的格式话方式。它们的 DOM 对应的是[属性(Attribute)](https://html.spec.whatwg.org/multipage/syntax.html#attributes-0)。像 DOM 属性和节点的关系一样，Attributors 也属于 Blots。调用[Inline](/docs/quill-translate/Parchment/parchment?id=inline-blot)或者[Block](/docs/quill-translate/Parchment/parchment?id=block-blot) Blot 的`formats()`方法将会返回相应的 DOM 节点的格式（如果有的话）以及 DOM 节点属性表示的格式（如果有的话）。
 
 Attributors 有以下的以下接口：
 
@@ -187,27 +187,27 @@ class Attributor {
 }
 ```
 
-**注意**：自定义的属性是实例，而不是类似于Blots的类定义。类似于Blots，你可能希望使用现有的Attributors实现，而不是从头开始创建，比如基础的[Attritor](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Parchment/parchment.md#attributor)、[Class Attributor](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Parchment/parchment.md#class-attributor)或者[Style Attributor](https://github.com/hzjswlgbsj/quill-document-chinese/blob/master/Parchment/parchment.md#style-attributor)。
+**注意**：自定义的属性是实例，而不是类似于 Blots 的类定义。类似于 Blots，你可能希望使用现有的 Attributors 实现，而不是从头开始创建，比如基础的[Attritor](/docs/quill-translate/Parchment/parchment?id=attributor)、[Class Attributor](/docs/quill-translate/Parchment/parchment?id=class-attributor)或者[Style Attributor](/docs/quill-translate/Parchment/parchment?id=style-attributor)。
 
-Attributors的实现非常简单，并且它的[源码](https://github.com/quilljs/parchment/tree/master/src/attributor)可能是另一个库的资源。
+Attributors 的实现非常简单，并且它的[源码](https://github.com/quilljs/parchment/tree/master/src/attributor)可能是另一个库的资源。
 
 ### Attributor
 
 使用一个普通属性来表示格式。
 
 ```js
-import Parchment from 'parchment';
+import Parchment from "parchment";
 
-let Width = new Parchment.Attributor.Attribute('width', 'width');
+let Width = new Parchment.Attributor.Attribute("width", "width");
 Parchment.register(Width);
 
-let imageNode = document.createElement('img');
+let imageNode = document.createElement("img");
 
-Width.add(imageNode, '10px');
-console.log(imageNode.outerHTML);   // Will print <img width="10px">
-Width.value(imageNode);                    // Will return 10px
+Width.add(imageNode, "10px");
+console.log(imageNode.outerHTML); // Will print <img width="10px">
+Width.value(imageNode); // Will return 10px
 Width.remove(imageNode);
-console.log(imageNode.outerHTML);   // Will print <img>
+console.log(imageNode.outerHTML); // Will print <img>
 ```
 
 ### Class Attributor
@@ -215,14 +215,14 @@ console.log(imageNode.outerHTML);   // Will print <img>
 使用类名模式来表示格式。
 
 ```js
-import Parchment from 'parchment';
+import Parchment from "parchment";
 
-let Align = new Parchment.Attributor.Class('align', 'blot-align');
+let Align = new Parchment.Attributor.Class("align", "blot-align");
 Parchment.register(Align);
 
-let node = document.createElement('div');
-Align.add(node, 'right');
-console.log(node.outerHTML);  // Will print <div class="blot-align-right"></div>
+let node = document.createElement("div");
+Align.add(node, "right");
+console.log(node.outerHTML); // Will print <div class="blot-align-right"></div>
 ```
 
 ### Style Attributor
@@ -230,21 +230,21 @@ console.log(node.outerHTML);  // Will print <div class="blot-align-right"></div>
 使用行样式来表示格式。
 
 ```js
-import Parchment from 'parchment';
+import Parchment from "parchment";
 
-let Align = new Parchment.Attributor.Style('align', 'text-align', {
-  whitelist: ['right', 'center', 'justify']   // Having no value implies left align
+let Align = new Parchment.Attributor.Style("align", "text-align", {
+  whitelist: ["right", "center", "justify"], // Having no value implies left align
 });
 Parchment.register(Align);
 
-let node = document.createElement('div');
-Align.add(node, 'right');
-console.log(node.outerHTML);  // Will print <div style="text-align: right;"></div>
+let node = document.createElement("div");
+Align.add(node, "right");
+console.log(node.outerHTML); // Will print <div style="text-align: right;"></div>
 ```
 
 ## Registry
 
-除了`Parchment.create('bold')`的所有方法都可以从Parchment中获得。
+除了`Parchment.create('bold')`的所有方法都可以从 Parchment 中获得。
 
 ```js
 // 通过名称或者DOM节点创建一个Blot
