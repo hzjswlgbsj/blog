@@ -6,3 +6,4 @@
 - [博客搭建之 Docsify 美化篇](docs/normal/博客搭建之Docsify美化篇)
 - [使用七牛云来做 typora 的图床](docs/normal/使用七牛云来做typora的图床)
 - [ssh 免密码登陆服务器](docs/normal/ssh免密码登陆服务器)
+- [记录一次简单的首屏加载时间优化](docs/normal/记录一次简单的首屏加载时间优化)
