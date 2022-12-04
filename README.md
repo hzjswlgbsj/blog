@@ -34,7 +34,7 @@
 - [博客搭建之 Docsify 美化篇](normal/博客搭建之Docsify美化篇.md)
 - [使用七牛云来做 typora 的图床](normal/使用七牛云来做typora的图床.md)
 - [ssh 免密码登陆服务器](normal/ssh免密码登陆服务器.md)
-- [ssh 记录一次简单的首屏加载时间优化](normal/记录一次简单的首屏加载时间优化.md)
+- [记录一次简单的首屏加载时间优化](normal/记录一次简单的首屏加载时间优化.md)
 
 ## 🍁 Quill 文档翻译
 
