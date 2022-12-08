@@ -1,9 +1,5 @@
-算法专题
+这边只记录数据结构和算法思想，LeetCode 刷题记录和解题思路，[请看这里](https://github.com/hzjswlgbsj/algorithm-study/)
 
 ## 目录
 
-- [理解 JavaScript 对象](/docs/javascript-base-learn/理解JavaScript对象)
-
-## 参考
-
-1. [JavaScript 高级程序设计](https://book.douban.com/subject/10546125/)
+- [排序算法](/docs/algorithm/排序算法.md)
