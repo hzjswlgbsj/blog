@@ -6,6 +6,21 @@
 
 写博客主要在于总结记录，其次才是是传播知识，个人定位于自我总结，主要是对学习的记录，如果对别人有帮助那可真是荣幸，如果你恰巧阅读到我写的文章，请不吝指导，万分感谢！
 
+## 🍀 技术杂文
+
+- [Centos+Docker+Nginx+Doscify+Github 搭建博客全教程](normal/Centos+Docker+Nginx+Doscify+Github搭建博客全教程.md)
+- [博客搭建之 Docsify 美化篇](normal/博客搭建之Docsify美化篇.md)
+- [使用七牛云来做 typora 的图床](normal/使用七牛云来做typora的图床.md)
+- [ssh 免密码登陆服务器](normal/ssh免密码登陆服务器.md)
+- [记录一次简单的首屏加载时间优化](normal/记录一次简单的首屏加载时间优化.md)
+- [margin 的边距折叠](normal/margin的边距折叠.md)
+
+## 🌿 在线文档
+
+- [假如自己实现一个富文本编辑器会发生什么](document-online/假如自己实现一个富文本编辑器会发生什么.md)
+- [Quill 编辑器架构](document-online/Quill编辑器架构.md)
+- [如何设计在线协同文档](document-online/如何设计在线协同文档.md)
+
 ## 🌾 JavaScript 恶补基础
 
 - [理解 JavaScript 对象](javascript-base-learn/理解JavaScript对象.md)
@@ -21,21 +36,6 @@
 - [call 和 apply](javascript-base-learn/call和apply.md)
 - [bind 执行时发生了什么](javascript-base-learn/bind执行时发生了什么.md)
 - [new 执行时发生了什么](javascript-base-learn/new执行时发生了什么.md)
-
-## 🌿 在线文档
-
-- [假如自己实现一个富文本编辑器会发生什么](document-online/假如自己实现一个富文本编辑器会发生什么.md)
-- [Quill 编辑器架构](document-online/Quill编辑器架构.md)
-- [如何设计在线协同文档](document-online/如何设计在线协同文档.md)
-
-## 🍀 技术杂文
-
-- [Centos+Docker+Nginx+Doscify+Github 搭建博客全教程](normal/Centos+Docker+Nginx+Doscify+Github搭建博客全教程.md)
-- [博客搭建之 Docsify 美化篇](normal/博客搭建之Docsify美化篇.md)
-- [使用七牛云来做 typora 的图床](normal/使用七牛云来做typora的图床.md)
-- [ssh 免密码登陆服务器](normal/ssh免密码登陆服务器.md)
-- [记录一次简单的首屏加载时间优化](normal/记录一次简单的首屏加载时间优化.md)
-- [margin 的边距折叠](normal/margin的边距折叠.md)
 
 ## 🍃 算法
 
