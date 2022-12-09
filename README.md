@@ -41,50 +41,11 @@
 
 - [排序算法](algorithm/排序算法.md)
 
-<!-- ## 🍁 Quill 文档翻译
+<!-- ## 🍁 Quill 文档翻译 -->
 
-### Documentation
+## 🌾 翻译
 
-- [API](quill-translate/Documentation/API/README.md)
-  - [content](quill-translate/Documentation/API/1.content.md)
-  - [formatting](quill-translate/Documentation/API/2.formatting.md)
-  - [selection](quill-translate/Documentation/API/3.selection.md)
-  - [editor](quill-translate/Documentation/API/4.editor.md)
-  - [events](quill-translate/Documentation/API/5.events.md)
-  - [model](quill-translate/Documentation/API/6.model.md)
-  - [extension](quill-translate/Documentation/API/7.extension.md)
-- [MODULES](quill-translate/Documentation/MODULES/README.md)
-  - [toolbar](quill-translate/Documentation/MODULES/1.toolbar.md)
-  - [keyboard](quill-translate/Documentation/MODULES/2.keyboard.md)
-  - [history](quill-translate/Documentation/MODULES/3.history.md)
-  - [clipboard](quill-translate/Documentation/MODULES/4.clipboard.md)
-  - [syntax](quill-translate/Documentation/MODULES/5.syntax.md)
-- [quick-start](quill-translate/Documentation/1.quick-start.md)
-- [download](quill-translate/Documentation/2.download.md)
-- [configuration](quill-translate/Documentation/3.configuration.md)
-- [formats](quill-translate/Documentation/4.formats.md)
-- [delta](quill-translate/Documentation/5.delta.md)
-- [themes](quill-translate/Documentation/6.themes.md)
-
-### Guides
-
-- [why-quill](quill-translate/Guides/1.why-quill.md)
-- [how-to-customize-quill](quill-translate/Guides/2.how-to-customize-quill.md)
-- [adding-quill-to-your-build-pipeline](quill-translate/Guides/3.adding-quill-to-your-build-pipeline.md)
-- [build-a-custom-module](quill-translate/Guides/4.build-a-custom-module.md)
-- [cloning-medium-with-parchment](quill-translate/Guides/5.cloning-medium-with-parchment.md)
-- [designing-the-delta-format](quill-translate/Guides/6.designing-the-delta-format.md)
-- [comparison-with-other-rich-text-editors](quill-translate/Guides/7.comparison-with-other-rich-text-editors.md)
-- [upgrading-to-1.0](quill-translate/Guides/8.upgrading-to-1.0.md)
-- [upgrading-to-2.0](quill-translate/Guides/9.upgrading-to-2.0.md)
-
-### Parchment
-
-- [parchment](quill-translate/Parchment/parchment.md) -->
-
-## 🌾 好文翻译
-
-- [Quill 中文文档](/docs/quill-translate/README)
+- [Quill 中文文档](quill-translate/README)
 
 ## 🍂 设计模式
 
