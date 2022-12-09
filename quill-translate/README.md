@@ -8,77 +8,75 @@
 
 - [content](/docs/quill-translate/Documentation/API/1.content)
 
-# Content
-
-## deleteText
+#### deleteText
 
 从编辑器中删除文本，返回表示更改的 [Delta](https://quilljs.com/guides/designing-the-delta-format/)。 [来源](https://quilljs.com/docs/api/#events)可以是`“user”`，`“api”`或`“silent”`。 [禁用](https://quilljs.com/docs/api/#disable)编辑器时，`“source”`为`“user”`的调用将被忽略。
 
-### Methods
+**Methods**
 
 ```javascript
 deleteText(index: Number, length: Number, source: String = 'api'): Delta
 ```
 
-### Examples
+**Examples**
 
 ```javascript
 quill.deleteText(6, 4);
 ```
 
-## getContents
+#### getContents
 
 检索编辑器的内容，以及由 [Delta](https://quilljs.com/guides/designing-the-delta-format/) 对象表示的格式化数据。
 
-### Methods
+**Methods**
 
 ```javascript
 getContents(index: Number = 0, length: Number = remaining): Delta
 ```
 
-### Examples
+**Examples**
 
 ```javascript
 var delta = quill.getContents();
 ```
 
-## getLength
+#### getLength
 
 检索编辑器内容的长度。 请注意，即使 Quill 为空，仍有一个由'\n'表示的空行，因此`getLength`将返回 1。
 
-### Methods
+**Methods**
 
 ```javascript
 getLength(): Number
 ```
 
-### Examples
+**Examples**
 
 ```javascript
 var length = quill.getLength();
 ```
 
-## insertEmbed
+#### insertEmbed
 
 将 embedded 的内容插入编辑器，返回表示更改的 [Delta](https://quilljs.com/guides/designing-the-delta-format/)。 [来源](https://quilljs.com/docs/api/#events)可以是`“user”`，`“api”`或`“silent”`。 [禁用](https://quilljs.com/docs/api/#disable)编辑器时，`“source”`为`“user”`的调用将被忽略。
 
-### Methods
+**Methods**
 
 ```javascript
 insertEmbed(index: Number, type: String, value: any, source: String = 'api'): Delta
 ```
 
-### Examples
+**Examples**
 
 ```javascript
 quill.insertEmbed(10, "image", "https://quilljs.com/images/cloud.png");
 ```
 
-## insertText
+#### insertText
 
 将文本插入编辑器，可选择使用指定格式或多种格式。返回表示更改的[Delta](https://quilljs.com/guides/designing-the-delta-format/)。 [来源](https://quilljs.com/docs/api/#events)可以是`“user”`，`“api”`或`“silent”`。 [禁用](https://quilljs.com/docs/api/#disable)编辑器时，`“source”`为`“user”`的调用将被忽略。
 
-### Methods
+**Methods**
 
 ```javascript
 insertText(index: Number, text: String, source: String = 'api'): Delta
@@ -88,7 +86,7 @@ insertText(index: Number, text: String, formats: { [String]: any },
            source: String = 'api'): Delta
 ```
 
-### Examples
+**Examples**
 
 ```javascript
 quill.insertText(0, "Hello", "bold", true);
@@ -99,17 +97,17 @@ quill.insertText(5, "Quill", {
 });
 ```
 
-## setContents
+#### setContents
 
 用给定内容覆盖编辑器。 内容应以 [换行符](https://quilljs.com/docs/delta/#line-formatting) 结尾。 返回表示更改的 [Delta](https://quilljs.com/guides/designing-the-delta-format/)。 如果 Delta 没有无效操作，这将与 Delta 传入相同。 [来源](https://quilljs.com/docs/api/#events)可以是`“user”`，`“api”`或`“silent”`。 [禁用](https://quilljs.com/docs/api/#disable) 编辑器时，`“source”`为`“user”`的调用将被忽略。
 
-### Methods
+**Methods**
 
 ```javascript
 setContents(delta: Delta, source: String = 'api'): Delta
 ```
 
-### Examples
+**Examples**
 
 ```javascript
 quill.setContents([
@@ -119,33 +117,33 @@ quill.setContents([
 ]);
 ```
 
-## setText
+#### setText
 
 用给定文本设置编辑器的内容，返回表示更改的 [Delta](https://quilljs.com/guides/designing-the-delta-format/)。 注意 Quill 文档必须以换行符结尾，因此如果省略，将添加一个换行符。 [来源](https://quilljs.com/docs/api/#events)可以是`“user”`，`“api”`或`“silent”`。 [禁用](https://quilljs.com/docs/api/#disable)编辑器时，`“source”`为`“user”`的调用将被忽略。
 
-### Methods
+**Methods**
 
 ```javascript
 setText(text: String, source: String = 'api'): Delta
 ```
 
-### Examples
+**Examples**
 
 ```javascript
 quill.setText("Hello\n");
 ```
 
-## updateContents
+#### updateContents
 
 将 Delta 应用于编辑器内容，返回表示更改的 [Delta](https://quilljs.com/guides/designing-the-delta-format/)。如果 Delta 传入没有无效操作，这些 Deltas 将是相同的。[来源](https://quilljs.com/docs/api/#events)可以是`“user”`，`“api”`或`“silent”`。 [禁用](https://quilljs.com/docs/api/#disable)编辑器时，`“source”`为`“user”`的调用将被忽略。
 
-### Methods
+**Methods**
 
 ```javascript
 updateContents(delta: Delta, source: String = 'api'): Delta
 ```
 
-### Examples
+**Examples**
 
 ```javascript
 // Assuming editor currently contains [{ insert: 'Hello World!' }]
