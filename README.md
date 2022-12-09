@@ -41,7 +41,7 @@
 
 - [排序算法](algorithm/排序算法.md)
 
-## 🍁 Quill 文档翻译
+<!-- ## 🍁 Quill 文档翻译
 
 ### Documentation
 
@@ -80,11 +80,11 @@
 
 ### Parchment
 
-- [parchment](quill-translate/Parchment/parchment.md)
+- [parchment](quill-translate/Parchment/parchment.md) -->
 
 ## 🌾 好文翻译
 
-搬运中...
+- [Quill 中文文档](/docs/quill-translate/README)
 
 ## 🍂 设计模式
 
