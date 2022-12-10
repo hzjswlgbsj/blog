@@ -6,13 +6,13 @@
 - 为什么 JavaScript（直到 ES6）有对象的概念，但是却没有像其他的语言那样，有类的概念呢
 - 为什么在 JavaScript 对象里面可以自由添加属性，而其他语言不能
 
-我在网上看到有些人强调：JavaScript 不是**面向对象**的语言，而是**基于对象**的语言。但是既然 [官方](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/A_re-introduction_to_JavaScript) 都已经说了 JavaScript 是一门面向对象的语言（在很多经典书籍中也提到了这个，比如《JavaScript 高级程序设计》第 6 章的 6.4 小结），我想我们有必要深入了解一下 JavaScript 的对象设计。
+我在网上看到有些人强调：JavaScript 不是 **面向对象** 的语言，而是 **基于对象** 的语言。但是既然 [官方](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/A_re-introduction_to_JavaScript) 都已经说了 JavaScript 是一门面向对象的语言（在很多经典书籍中也提到了这个，比如《JavaScript 高级程序设计》第 6 章的 6.4 小结），我想我们有必要深入了解一下 JavaScript 的对象设计。
 
 > 注意：昨天我同事说中文的原文翻译添加了翻译者自己的理解，我不由的要提醒，我写的文章也是个人理解，请大家带着辨证的眼光看待！
 >
 > 英文原文：JavaScript is a multi-paradigm, dynamic language with types and operators, standard built-in objects, and methods.
 >
-> **个人理解**：直接硬翻译过来就是：JavaScript 是一种**多范式**的**动态语言**，具有类型和操作符、标准内置对象和方法。动态主要体现在 JavaScript 在运行时对象是可以改变的，多范式体现在，可以用原型来实现面向对象编程，也可以用大量高阶函数来模拟函数式编程等（原文下文也有提到）。原文下文便明确了 JavaScript 面向对象编程的范式。
+> **个人理解**：直接硬翻译过来就是：JavaScript 是一种 **多范式** 的 **动态语言**，具有类型和操作符、标准内置对象和方法。动态主要体现在 JavaScript 在运行时对象是可以改变的，多范式体现在，可以用原型来实现面向对象编程，也可以用大量高阶函数来模拟函数式编程等（原文下文也有提到）。原文下文便明确了 JavaScript 面向对象编程的范式。
 >
 > 英文原文：JavaScript supports object-oriented programming with object prototypes, instead of classes (see more about prototypical inheritance and ES2015 classes).
 >
@@ -48,7 +48,7 @@ ECMA-262 把对象定义为：**无序属性的集合，其属性可以包含基
 
 对象跟引用类型肯定不是等价的，只能说对象都是基于引用类型创建的。
 
-JavaScript 抽象对象选择的是比较冷门的方式，那就是**原型**，这也是很多人普遍认为 JavaScript 不是面向对象的原因吧。但是如果我们从运行时的角度来看的话，其实就是在讨论 JavaScript 实际运行中的模型，这是由于任何代码执行都绕不开运行时的对象模型。
+JavaScript 抽象对象选择的是比较冷门的方式，那就是 **原型**，这也是很多人普遍认为 JavaScript 不是面向对象的原因吧。但是如果我们从运行时的角度来看的话，其实就是在讨论 JavaScript 实际运行中的模型，这是由于任何代码执行都绕不开运行时的对象模型。
 
 幸运的是，从运行时的角度来看的话，我们就可以不用受到“基于类的设施”的困扰，这是因为任何语言运行时，类的概念都是被弱化的。下面我们就来看看 JavaScript 是怎么设计对象模型的。
 
@@ -85,7 +85,7 @@ var o = {
 
 o 就是一个对象，name 和 sayName 都是属性，尽管它们的写法不同，但是对于 JavaScript 来说它们就是普通的属性。所以总结来看的话：在 JavaScript 中，状态和行为都被抽象为了属性。**并且 JavaScript 还有个跟 Java 和 C++ 不同的地方是，JavaScript 对象允许使用者在运行时为对象添加或修改状态和行为**。
 
-下面的代码演示了如何向一个**运行时**的 JavaScript 对象添加一个属性，首先我用字面量的方式创建了一个对象，定义完后我才给它添加了属性 b ，这样在 JavaScript 中是没问题的。
+下面的代码演示了如何向一个 **运行时** 的 JavaScript 对象添加一个属性，首先我用字面量的方式创建了一个对象，定义完后我才给它添加了属性 b ，这样在 JavaScript 中是没问题的。
 
 ```javascript
 var o = { a: 1 };
@@ -178,8 +178,8 @@ console.log(person.name); // Uncaught TypeError: Cannot redefine property: name(
 
 - [[enumeration]]：默认值为 true，决定是否能用 for in 来枚举该属性
 - [[configuration]]：默认值为 true，决定该属性能否被删除或者改变特征值，**能否把属性由数据属性改为访问器属性**
-- [[get]]：默认值为 undefined，在读取属性值时被调用的**函数**。
-- [[set]]：默认值为 undefined，在设置属性值时被调用的**函数**。
+- [[get]]：默认值为 undefined，在读取属性值时被调用的 **函数**。
+- [[set]]：默认值为 undefined，在设置属性值时被调用的 **函数**。
 
 **注意**：
 
@@ -214,9 +214,9 @@ console.log(book.edition); // 2
 结合上面代码，我们总结一下：
 
 - 访问器属性不能直接定义，必须使用`Object.defineProperty()`来定义，且该属性具有 set 和 ger 特性，于是可以判断，\_year 和 edition 是数据属性，而 year 是访问器属性。
-- 我们看到 \_year 这个数据属性前面是以下划线开头的，这个一种常用的记号，用于表示**只能通过对象方法访问的属性**。从上面的例子中可以看到 get 相当于描述符对象的一个方法，而 \_year 正是在这个对象方法访问的属性。而 edition 既可以通过对象方法访问，也可以由对象直接访问。
-- book.year 表示正在**读取访问器属性**，这时会调用 get 函数，并返回了 2004 这个有效的值。
-- book.year=2005 表示**写入访问器属性**，这时会调用 set 函数并传入新值，即将 2005 传给 newValue，这个函数决定如何处理数据。
+- 我们看到 \_year 这个数据属性前面是以下划线开头的，这个一种常用的记号，用于表示 **只能通过对象方法访问的属性**。从上面的例子中可以看到 get 相当于描述符对象的一个方法，而 \_year 正是在这个对象方法访问的属性。而 edition 既可以通过对象方法访问，也可以由对象直接访问。
+- book.year 表示正在 **读取访问器属性**，这时会调用 get 函数，并返回了 2004 这个有效的值。
+- book.year=2005 表示 **写入访问器属性**，这时会调用 set 函数并传入新值，即将 2005 传给 newValue，这个函数决定如何处理数据。
 - 这是使用访问器属性的常见方法，即设置一个属性的值可以做我们想做的其他事，比如修改另一个属性的值。
 
 当然，我们在使用字面量创建对象的时候依然可以使用 get 和 set 关键字来创建访问器属性，代码如下：
