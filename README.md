@@ -17,9 +17,9 @@
 
 ## 🌿 在线文档
 
-- [假如自己实现一个富文本编辑器会发生什么](document-online/假如自己实现一个富文本编辑器会发生什么.md)
-- [Quill 编辑器架构](document-online/Quill编辑器架构.md)
-- [如何设计在线协同文档](document-online/如何设计在线协同文档.md)
+- [假如自己实现一个富文本编辑器会发生什么<small>在线文档</small>](document-online/假如自己实现一个富文本编辑器会发生什么.md)
+- [Quill 编辑器架构<small>在线文档</small>](document-online/Quill编辑器架构.md)
+- [如何设计在线协同文档<small>在线文档</small>](document-online/如何设计在线协同文档.md)
 
 ## 🌾 JavaScript 恶补基础
 
@@ -46,7 +46,7 @@
 ## 🌾 翻译
 
 - [Quill 中文文档](quill-translate/README)
-- [比 CRDTs 快 5000 倍：一次冒险的优化[译]](document-online/比CRDTs快5000倍：一次冒险的优化[译])
+- [比 CRDTs 快 5000 倍：一次冒险的优化[译]<small>在线文档</small>](document-online/比CRDTs快5000倍：一次冒险的优化[译])
 
 ## 🍂 设计模式
 
