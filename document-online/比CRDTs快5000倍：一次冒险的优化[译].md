@@ -167,7 +167,7 @@ Automerge 从来没有考虑过性能。 他们的团队正在研究算法的替
 
 Yjs 不需要整篇博文来讨论如何使其更快，因为它已经非常快了，我们很快就会看到。 它通过使用一个聪明的、明显的数据结构“技巧”实现，我认为该领域的其他人没有想到它。 而不是像 automerge 那样将 CRDT 实现为树：
 
-```
+```js
 state = {
   { item: 'a', id: ['seph', 0], seq: 0, children: [
     { item: 'X', id, seq, children: []},
@@ -180,7 +180,7 @@ state = {
 
 Yjs 只是将所有 Item 放在一个单一的列表中：
 
-```
+```js
 state = [
   { item: 'a', id: ['seph', 0], seq: 0, parent: null },
   { item: 'X', id, seq, parent: ['seph', 0] },
@@ -206,29 +206,31 @@ state = [
 
 （但如果这看起来令人困惑，请不要惊慌 - 我们可能可以让地球上今天理解此代码的每个人都进入一个小会议室。）
 
-```
+```js
 const automergeInsert = (doc, newItem) => {
-  const parentIdx = findItem(doc, newItem.parent) // (1)
+  const parentIdx = findItem(doc, newItem.parent); // (1)
 
   // Scan to find the insert location
-  let i
+  let i;
   for (i = parentIdx + 1; i < doc.content.length; i++) {
-    let o = doc.content[i]
-    if (newItem.seq > o.seq) break // Optimization.
-    let oparentIdx = findItem(doc, o.parent)
+    let o = doc.content[i];
+    if (newItem.seq > o.seq) break; // Optimization.
+    let oparentIdx = findItem(doc, o.parent);
 
     // Should we insert here? (Warning: Black magic part)
-    if (oparentIdx < parentIdx
-      || (oparentIdx === parentIdx
-        && newItem.seq === o.seq
-        && newItem.id[0] < o.id[0])
-    ) break
+    if (
+      oparentIdx < parentIdx ||
+      (oparentIdx === parentIdx &&
+        newItem.seq === o.seq &&
+        newItem.id[0] < o.id[0])
+    )
+      break;
   }
   // We've found the position. Insert at position *i*.
-  doc.content.splice(i, 0, newItem) // (2)
+  doc.content.splice(i, 0, newItem); // (2)
 
   // .. And do various bookkeeping.
-}
+};
 ```
 
 我在我的实验性 [_reference-crdts_](https://github.com/josephg/reference-crdts/blob/main/crdts.ts) 代码库中使用这种方法实现了 Yjs 的 CRDT (YATA) 和 Automerge。 [这是插入功能，还有一些注释](https://github.com/josephg/reference-crdts/blob/fed747255df9d457e11f36575de555b39f07e909/crdts.ts#L401-L459) 。 这个函数的 Yjs 版本在同一个文件中，如果你想看看。 尽管是来自不同的论文，但插入的逻辑几乎相同。 尽管代码不尽相同，但这种方法在语义上与实际的 automerge、Yjs 和 sync9 代码库相同。 （ [Fuzzer verified (TM)](https://github.com/josephg/reference-crdts/blob/main/reference_test.ts) ）。
@@ -268,7 +270,7 @@ const automergeInsert = (doc, newItem) => {
 
 为了理解为什么这个代码是必要的，假设我们有一个文档，它是一个项目列表。
 
-```
+```js
 state = [
   { item: 'a', isDeleted: false, id: ['seph', 0], seq, parent: null },
   { item: 'X', isDeleted: false, id, seq, parent: ['seph', 0] },
@@ -286,8 +288,8 @@ state = [
 
 然后当我们实际插入时，代码会这样做，这是双重的：
 
-```
-doc.content.splice(destIdx, 0, newItem)
+```js
+doc.content.splice(destIdx, 0, newItem);
 ```
 
 如果数组当前有 150 000 个项目，javascript 将需要将 newItem 之后的每个 Item 向后移动一次。 这部分发生在本机代码中，但是当我们移动这么多 Items 时它可能仍然很慢。 （旁白：V8 在这方面的速度实际上令人怀疑，所以也许 v8 没有在内部使用数组来实现数组？谁知道！）
@@ -321,22 +323,22 @@ Yjs 一旦找到目标插入位置，就需要高效插入，而不是复制所�
 
 Yjs 还做了一件事来提高性能。 人类通常会输入一系列字符。 因此，当我们在文档中输入“hello”时，不是存储：
 
-```
+```js
 state = [
-  { item: 'h', isDeleted: false, id: ['seph', 0], seq, parent: null },
-  { item: 'e', isDeleted: false, id: ['seph', 1], seq, parent: ['seph', 0] },
-  { item: 'l', isDeleted: false, id: ['seph', 2], seq, parent: ['seph', 1] },
-  { item: 'l', isDeleted: false, id: ['seph', 3], seq, parent: ['seph', 2] },
-  { item: 'o', isDeleted: false, id: ['seph', 4], seq, parent: ['seph', 3] },
-]
+  { item: "h", isDeleted: false, id: ["seph", 0], seq, parent: null },
+  { item: "e", isDeleted: false, id: ["seph", 1], seq, parent: ["seph", 0] },
+  { item: "l", isDeleted: false, id: ["seph", 2], seq, parent: ["seph", 1] },
+  { item: "l", isDeleted: false, id: ["seph", 3], seq, parent: ["seph", 2] },
+  { item: "o", isDeleted: false, id: ["seph", 4], seq, parent: ["seph", 3] },
+];
 ```
 
 Yjs 仅仅存储：
 
-```
+```js
 state = [
-  { item: 'hello', isDeleted: false, id: ['seph', 0], seq, parent: null },
-]
+  { item: "hello", isDeleted: false, id: ["seph", 0], seq, parent: null },
+];
 ```
 
 最后那些讨厌的粘贴事件也会很快！
@@ -378,14 +380,14 @@ Kevin 说他编写并重写了 Yjs 的部分内容 12 次，以使这段代码�
 
 想象一下我们在 javascript 中的文档项之一：
 
-```
+```js
 var item = {
-  content: 'hello',
+  content: "hello",
   isDeleted: false,
-  id: ['seph', 10],
+  id: ["seph", 10],
   seq: 5,
-  parent: ['mike', 2]
-}
+  parent: ["mike", 2],
+};
 ```
 
 这个对象在内存中实际上是这样的：
@@ -468,7 +470,7 @@ Javascript 和 WASM 现在是一个瓶颈。 如果我们跳过 javascript 并 [
 
 在 Rust 中，我实际上是在做这样的事情：
 
-```
+```js
 doc = {
   textContent: RopeyRope { 'hello' },
 
