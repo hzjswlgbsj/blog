@@ -21,7 +21,6 @@
 **以下为正文。**
 
 <br/>
-<br/>
 
 几年前，我真的被一篇学术论文所困扰。
 
@@ -653,21 +652,24 @@ automerge-rs 并不比 automerge 快这一事实让我相信 Diamond 的性能�
 
 因为它并没有试图变得快。 查看 [automerge](https://github.com/automerge/automerge/blob/d2e7ca2e141de0a72f540ddd738907bcde234183/backend/op_set.js#L649-L659) 中的这段代码：
 
-```
+```js
 function lamportCompare(op1, op2) {
-  return opIdCompare(op1.get('opId'), op2.get('opId'))
+  return opIdCompare(op1.get("opId"), op2.get("opId"));
 }
 
 function insertionsAfter(opSet, objectId, parentId, childId) {
-  let childKey = null
-  if (childId) childKey = Map({opId: childId})
+  let childKey = null;
+  if (childId) childKey = Map({ opId: childId });
 
   return opSet
-    .getIn(['byObject', objectId, '_following', parentId], List())
-    .filter(op => op.get('insert') && (!childKey || lamportCompare(op, childKey) < 0))
+    .getIn(["byObject", objectId, "_following", parentId], List())
+    .filter(
+      (op) =>
+        op.get("insert") && (!childKey || lamportCompare(op, childKey) < 0)
+    )
     .sort(lamportCompare)
     .reverse() // descending order
-    .map(op => op.get('opId'))
+    .map((op) => op.get("opId"));
 }
 ```
 
