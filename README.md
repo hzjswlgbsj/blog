@@ -40,7 +40,7 @@
 
 ## 🍃 数据结构与算法
 
-- [排序算法](algorithm/排序算法.md)
+- [排序算法](algorithm/Sort.md)
 
 <!-- ## 🍁 Quill 文档翻译 -->
 

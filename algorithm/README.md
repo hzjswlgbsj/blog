@@ -2,4 +2,4 @@
 
 ## 目录
 
-- [排序算法](/docs/algorithm/排序算法.md)
+- [排序算法](/docs/algorithm/Sort.md)
