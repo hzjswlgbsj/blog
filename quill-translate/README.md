@@ -355,19 +355,470 @@ quill.setSelection(0, 5);
 
 ### [编辑器](/docs/quill-translate/Documentation/API/4.editor)
 
-- [editor](/docs/quill-translate/Documentation/API/4.editor)
+#### blur
+
+从编辑器中删除焦点。
+
+**Methods**
+
+```javascript
+blur();
+```
+
+**Examples**
+
+```javascript
+quill.blur();
+```
+
+#### enable
+
+通过鼠标或键盘等输入设备设置用户编辑的能力。 当源为`“api”`或`“silent”`时，不影响 API 调用的功能。
+
+**Methods**
+
+```javascript
+enable(((enabled: boolean) = true));
+```
+
+**Examples**
+
+```javascript
+quill.enable();
+quill.enable(false); // Disables user input
+```
+
+#### disable
+
+`enable(false)`的简写
+
+#### focus
+
+让编辑器获得焦点，并将光标至于最后。
+
+**Methods**
+
+```javascript
+focus();
+```
+
+**Examples**
+
+```javascript
+quill.focus();
+```
+
+#### hasFocus
+
+检查编辑器是否处于获取焦点状态。 注意注意工具栏，工具提示，不算作编辑器。
+
+**Methods**
+
+```javascript
+hasFocus(): Boolean
+```
+
+**Examples**
+
+```javascript
+quill.hasFocus();
+```
+
+#### update
+
+如果发生更改，请同步检查编辑器以获取用户更新并触发事件。 在解决冲突期间需要最新的最新状态的协作用例非常有用。[来源](https://quilljs.com/docs/api/#events) 可以是`“user”`，`“api”`或`“silent”`。
+
+**Methods**
+
+```javascript
+update(((source: String) = "user"));
+```
+
+**Examples**
+
+```javascript
+quill.update();
+```
 
 ### [事件](/docs/quill-translate/Documentation/API/5.events)
 
-- [events](/docs/quill-translate/Documentation/API/5.events)
+#### text-change
+
+当 Quill 的内容发生变化时发出。 提供了更改的详细信息，更改前编辑器内容的表示以及更改的来源。 如果源来自用户，则源将是`“user”`。 例如：
+
+- 用户输入编辑器
+
+- 用户使用工具栏格式化文本
+
+- 用户使用热键撤消
+
+- 用户使用操作系统拼写纠正
+
+可能通过 API 发生更改，但只要它们来自用户，所提供的源仍应为`“user”`。 例如，当用户单击工具栏时，技术上工具栏模块会调用 Quill API 来实现更改。 但是源仍然是`“user”`，因为更改的起源是用户的点击。
+
+导致文本更改的 API 也可以使用`“silent”`源调用，在这种情况下，`text-change`不会被触发。 建议不要这样做，因为它可能会破坏撤消堆栈以及依赖于完整文本更改记录的其他功能。
+
+对文本的更改可能会导致更改选择（例如，键入前进光标），但是在`text-change`处理程序期间，光标（selection）尚未更新，并且本机浏览器行为可能会将其置于不一致状态。 使用下文的`selection-change`或`editor-change`来获得可靠的选择更新。
+
+**Callback Signature**
+
+```javascript
+handler(delta: Delta, oldContents: Delta, source: String)
+```
+
+**Examples**
+
+```javascript
+quill.on("text-change", function (delta, oldDelta, source) {
+  if (source == "api") {
+    console.log("An API call triggered this change.");
+  } else if (source == "user") {
+    console.log("A user action triggered this change.");
+  }
+});
+```
+
+#### selection-change
+
+当用户或 API 导致选择更改时发出，其中范围表示选择边界。 空范围表示选择丢失（通常由编辑器失去焦点引起）。 您还可以通过检查发出的范围是否为空来将此事件用作焦点更改事件。
+
+导致光标（selection）改变的 API 也可以用`“silent”`源调用，在这种情况下，不会触发`selection-change`。 如果`selection-change`是副作用，这将非常有用。 例如，键入会导致选择发生更改，但如果同时对每个字符都触发`selection-change`事件，则会产生非常大的噪声（副作用？低性能？）。
+
+**Callback Signature**
+
+```javascript
+handler(range: { index: Number, length: Number },
+        oldRange: { index: Number, length: Number },
+        source: String)
+```
+
+**Examples**
+
+```javascript
+quill.on("selection-change", function (range, oldRange, source) {
+  if (range) {
+    if (range.length == 0) {
+      console.log("User cursor is on", range.index);
+    } else {
+      var text = quill.getText(range.index, range.length);
+      console.log("User has highlighted", text);
+    }
+  } else {
+    console.log("Cursor not in the editor");
+  }
+});
+```
+
+#### editor-change
+
+当事件`text-change`或`selection-change`被触发时，`editor-change`都会被触发，即使源是`“silent”`。第一个参数是`text-change`或`selection-change`的事件名，后跟通常传递给相应处理程序的参数。
+
+**Callback Signature**
+
+```javascript
+handler(name: String, ...args)
+```
+
+**Examples**
+
+```javascript
+quill.on("editor-change", function (eventName, ...args) {
+  if (eventName === "text-change") {
+    // args[0] will be delta
+  } else if (eventName === "selection-change") {
+    // args[0] will be old range
+  }
+});
+```
+
+#### on
+
+添加事件处理程序。 有关事件本身的更多详细信息，请参阅上文的`text-change`或`selection-change`。
+
+**Methods**
+
+```javascript
+on(name: String, handler: Function): Quill
+```
+
+**Examples**
+
+```javascript
+quill.on("text-change", function () {
+  console.log("Text change!");
+});
+```
+
+#### once
+
+添加一个只触发一次的事件处理程序。 有关事件本身的更多详细信息，请参阅上文的`text-change`或`selection-change`。
+
+**Methods**
+
+```javascript
+once(name: String, handler: Function): Quill
+```
+
+**Examples**
+
+```javascript
+quill.once("text-change", function () {
+  console.log("First text change!");
+});
+```
+
+#### off
+
+删除事件处理程序。
+
+**Methods**
+
+```javascript
+off(name: String, handler: Function): Quill
+```
+
+**Examples**
+
+```javascript
+function handler() {
+  console.log("Hello!");
+}
+
+quill.on("text-change", handler);
+quill.off("text-change", handler);
+```
 
 ### [模型](/docs/quill-translate/Documentation/API/6.model)
 
-- [model](/docs/quill-translate/Documentation/API/6.model)
+> 注意：本节的 api 都是实验性的。
+
+#### find
+
+静态方法返回给定 DOM 节点的 Quill 或 [Blot](https://github.com/quilljs/parchment) 实例。 在后一种情况下，为`bubble`参数传入 true 将搜索给定 DOM 的祖先，直到找到相应的 [Blot](https://github.com/quilljs/parchment)。
+
+**Methods**
+
+```javascript
+Quill.find(domNode: Node, bubble: boolean = false): Blot | Quill
+```
+
+**Examples**
+
+```javascript
+var container = document.querySelector("#container");
+var quill = new Quill(container);
+console.log(Quill.find(container) === quill); // Should be true
+
+quill.insertText(0, "Hello", "link", "https://world.com");
+var linkNode = document.querySelector("#container a");
+var linkBlot = Quill.find(linkNode);
+```
+
+#### getIndex
+
+返回文档开头与给定 [Blot](https://github.com/quilljs/parchment) 出现之间的距离。
+
+**Methods**
+
+```javascript
+getIndex(blot: Blot): Number
+```
+
+**Examples**
+
+```javascript
+let [line, offset] = quill.getLine(10);
+let index = quill.getIndex(line); // index + offset should == 10
+```
+
+#### getLeaf
+
+返回文档中指定索引处的叶 [Blot](https://github.com/quilljs/parchment)。
+
+**Methods**
+
+```javascript
+getLeaf(index: Number): Blot
+```
+
+**Examples**
+
+```javascript
+quill.setText("Hello Good World!");
+quill.formatText(6, 4, "bold", true);
+
+let [leaf, offset] = quill.getLeaf(7);
+// leaf should be a Text Blot with value "Good"
+// offset should be 1, since the returned leaf started at index 6
+```
+
+#### getLine
+
+返回文档中指定索引处的 Blot[Blot](https://github.com/quilljs/parchment)行。
+
+**Methods**
+
+```javascript
+getLine(index: Number): [Blot, Number]
+```
+
+**Examples**
+
+```javascript
+quill.setText("Hello\nWorld!");
+
+let [line, offset] = quill.getLine(7);
+// line should be a Block Blot representing the 2nd "World!" line
+// offset should be 1, since the returned line started at index 6
+```
+
+#### getLines
+
+返回指定位置中包含的行。
+
+**Methods**
+
+```javascript
+getLines(index: Number = 0, length: Number = remaining): Blot[]
+getLines(range: Range): Blot[]
+```
+
+**Examples**
+
+```javascript
+quill.setText("Hello\nGood\nWorld!");
+quill.formatLine(1, 1, "list", "bullet");
+
+let lines = quill.getLines(2, 5);
+// array with a ListItem and Block Blot,
+// representing the first two lines
+```
 
 ### [扩展](/docs/quill-translate/Documentation/API/7.extension)
 
-- [extension](/docs/quill-translate/Documentation/API/7.extension)
+#### debug
+
+允许在给定级别记录消息的静态方法：`'error'`，`'warn'`，`'log'`或`'info'`。 传递 true 相当于传递`'log'`。 传递`false`会禁用所有消息。
+
+**Methods**
+
+```javascript
+Quill.debug(level: String | Boolean)
+```
+
+**Examples**
+
+```javascript
+Quill.debug("info");
+```
+
+#### import
+
+返回 Quill 库，格式，模块或主题的静态方法。 通常，路径应该精确映射到 Quill 源代码目录结构。 除非另有说明，否则对返回实体的修改可能会破坏所需的 Quill 功能，因此强烈建议不要这样做。
+
+**Methods**
+
+```javascript
+Quill.import(path): any
+```
+
+**Examples**
+
+```javascript
+var Parchment = Quill.import("parchment");
+var Delta = Quill.import("delta");
+
+var Toolbar = Quill.import("modules/toolbar");
+var Link = Quill.import("formats/link");
+// Similar to ES6 syntax `import Link from 'quill/formats/link';`
+```
+
+#### register
+
+注册模块，主题或格式，使其可以添加到编辑器中。以后可以使用`Quill.import`检索。使用`'formats/'`，`'modules/'`或`'themes/'`的路径前缀分别注册格式，模块或主题。对于特定格式，缩写为直接传递格式，路径将自动生成。 将使用相同的路径覆盖现有定义。
+
+**Methods**
+
+```javascript
+Quill.register(format: Attributor | BlotDefinintion, supressWarning: Boolean = false)
+Quill.register(path: String, def: any, supressWarning: Boolean = false)
+Quill.register(defs: { [String]: any }, supressWarning: Boolean = false)
+```
+
+**Examples**
+
+```javascript
+var Module = Quill.import("core/module");
+
+class CustomModule extends Module {}
+
+Quill.register("modules/custom-module", CustomModule);
+```
+
+```javascript
+Quill.register({
+  "formats/custom-format": CustomFormat,
+  "modules/custom-module-a": CustomModuleA,
+  "modules/custom-module-b": CustomModuleB,
+});
+
+Quill.register(CustomFormat);
+// You cannot do Quill.register(CustomModuleA); as CustomModuleA is not a format
+```
+
+#### addContainer
+
+在 Quill 容器中添加并返回一个容器元素，同步到编辑器本身。按照惯例，Quill 模块应该有一个前缀为`ql-`的类名。可选地包括一个 refNode，其中应该插入容器。
+
+**Methods**
+
+```javascript
+addContainer(className: String, refNode?: Node): Element
+addContainer(domNode: Node, refNode?: Node): Element
+```
+
+**Examples**
+
+```javascript
+var container = quill.addContainer("ql-custom");
+```
+
+#### getModule
+
+检索已添加到编辑器的模块。
+
+**Methods**
+
+```javascript
+getModule(name: String): any
+```
+
+**Examples**
+
+```javascript
+var toolbar = quill.getModule("toolbar");
+```
+
+#### enable
+
+通过鼠标或键盘等输入设备设置用户编辑的能力。 当源为`“api”`或`“silent”`时，不影响 API 调用的功能。
+
+**Methods**
+
+```javascript
+enable(((enabled: boolean) = true));
+```
+
+**Examples**
+
+```javascript
+quill.enable();
+quill.enable(false); // Disables user input
+```
+
+#### disable
+
+`enable(false)`的简写
 
 ## 模块
 
