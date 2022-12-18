@@ -1266,67 +1266,67 @@ var quill = new Quill("#editor", {
 });
 ```
 
-## API
+#### API
 
-### clear
+**clear**
 
 清除历史堆栈。
 
-#### Methods
+Methods
 
 ```javascript
 clear();
 ```
 
-#### Examples
+Examples
 
 ```javascript
 quill.history.clear();
 ```
 
-### cutoff(该 API 在实验中)
+**cutoff(该 API 在实验中)**
 
 通常，短时间连续发生的更改（由`delay`配置）将合并为单个更改，因此触发撤消将撤消多个更改。使用`cutoff()`将重置合并窗口，以便调用`cutoff()`之前和之后的更改将不会合并。
 
-#### Methods
+Methods
 
 ```javascript
 cutoff();
 ```
 
-#### Examples
+Examples
 
 ```javascript
 quill.history.cutoff();
 ```
 
-### cutoff
+**cutoff**
 
 撤消上次更改。
 
-#### Methods
+Methods
 
 ```javascript
 undo();
 ```
 
-#### Examples
+Examples
 
 ```javascript
 quill.history.undo();
 ```
 
-### redo
+**redo**
 
 如果上次更改是撤消操作，请重做此撤消操作。 否则什么都不做。
 
-#### Methods
+Methods
 
 ```javascript
 redo();
 ```
 
-#### Examples
+Examples
 
 ```javascript
 quill.history.redo();
@@ -1334,7 +1334,78 @@ quill.history.redo();
 
 ### [剪切板](/docs/quill-translate/Documentation/MODULES/4.clipboard)
 
-- [clipboard](/docs/quill-translate/Documentation/MODULES/4.clipboard)
+剪贴板处理 Quill 和外部应用程序之间的复制，剪切和粘贴。 存在一组默认值以提供对粘贴内容的合理解释，并具有通过匹配器进一步自定义的能力。
+
+剪贴板通过在 [后序遍历](https://zh.wikipedia.org/wiki/%E6%A0%91%E7%9A%84%E9%81%8D%E5%8E%86) 相应的 DOM 树来解释粘贴的 HTML，从而构建所有子树的 [Delta](https://quilljs.com/docs/delta/) 表示。在每个后代节点，到目前为止，使用 DOM 节点和 Delta 解释调用匹配器函数，允许匹配器返回修改的 Delta 解释。
+
+为了有效地使用匹配器，[Deltas](https://quilljs.com/docs/delta)的熟悉和舒适是必要的。
+
+#### API
+
+**addMatcher**
+
+将自定义匹配器添加到剪贴板。使用`nodeType`的匹配器按照添加的顺序首先被调用，然后是使用 CSS`selector`的匹配器，也按照添加的顺序。 [nodeType](https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType)可以是`Node.ELEMENT_NODE`或`Node.TEXT_NODE`。
+
+Methods
+
+```javascript
+addMatcher(selector: String, (node: Node, delta: Delta) => Delta)
+addMatcher(nodeType: Number, (node: Node, delta: Delta) => Delta)
+```
+
+Examples
+
+```javascript
+quill.clipboard.addMatcher(Node.TEXT_NODE, function (node, delta) {
+  return new Delta().insert(node.data);
+});
+
+// Interpret a <b> tag as bold
+quill.clipboard.addMatcher("B", function (node, delta) {
+  return delta.compose(new Delta().retain(delta.length(), { bold: true }));
+});
+```
+
+**dangerouslyPasteHTML**
+
+将 HTML 代码段表示的内容插入到给定索引的编辑器中。该代码段由剪贴板 [匹配器](https://quilljs.com/docs/modules/clipboard/#addMatcher) 解释，它可能不会生成准确的输入 HTML。如果没有提供插入索引，则会覆盖整个编辑器内容。[源](https://quilljs.com/docs/api/#events)可以是`“user”`，`“api”`或`“silent”`。
+
+不正确的 HTML 处理可能导致跨站点脚本（XSS）和无法正确清理，这是众所周知的容易出错和导致 Web 漏洞的主要原因。此方法遵循 React 的示例，并且恰当地命名以确保开发人员已采取必要的预防措施。
+
+Methods
+
+```javascript
+dangerouslyPasteHTML(html: String, source: String = 'api')
+dangerouslyPasteHTML(index: Number, html: String, source: String = 'api')
+```
+
+Examples
+
+```javascript
+quill.setText("Hello!");
+
+quill.clipboard.dangerouslyPasteHTML(5, "&nbsp;<b>World</b>");
+// Editor is now '<p>Hello&nbsp;<strong>World</strong>!</p>';
+```
+
+#### Configuration
+
+**matchers**
+
+可以将一系列匹配器传递到 Clipboard 的配置选项中。 这些将在 Quill 自己的默认匹配器后附加。
+
+```javascript
+var quill = new Quill("#editor", {
+  modules: {
+    clipboard: {
+      matchers: [
+        ["B", customMatcherA],
+        [Node.TEXT_NODE, customMatcherB],
+      ],
+    },
+  },
+});
+```
 
 ### [语法](/docs/quill-translate/Documentation/MODULES/5.syntax)
 
