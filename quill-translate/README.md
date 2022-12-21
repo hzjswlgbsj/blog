@@ -1440,11 +1440,77 @@ var quill = new Quill("#editor", {
 
 ## [快速开始](/docs/quill-translate/Documentation/1.quick-start)
 
-- [quick-start](/docs/quill-translate/Documentation/1.quick-start)
+最好的入门方法是尝试一个简单的例子。 使用 DOM 元素初始化 Quill 以包含编辑器。 该元素的内容将成为 Quill 的初始内容。
+
+```javascript
+<!-- Include stylesheet -->
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
+<!-- Create the editor container -->
+<div id="editor">
+  <p>Hello World!</p>
+  <p>Some initial <strong>bold</strong> text</p>
+  <p><br></p>
+</div>
+
+<!-- Include the Quill library -->
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
+<!-- Initialize Quill editor -->
+<script>
+  var quill = new Quill('#editor', {
+    theme: 'snow'
+  });
+</script>
+```
+
+这就是它的全部！
+
+### 下一步
+
+Quill 真正的神奇之处在于其灵活性和可扩展性。 您可以通过在整个站点中播放演示或直接访问 [Interactive Playground](https://quilljs.com/playground/)来了解可能的内容。 有关深入演练，请参阅 [如何自定义 Quill](/docs/quill-translate/Guides/2.how-to-customize-quill)。
 
 ## [下载](/docs/quill-translate/Documentation/2.download)
 
-- [download](/docs/quill-translate/Documentation/2.download)
+Quill 准备好以几种方便的形式使用。
+
+### CDN
+
+提供全球分布式可用 CDN，由 [Render](https://render.com/) 提供支持。
+
+```javascript
+<!-- Main Quill library -->
+<script src="//cdn.quilljs.com/1.3.6/quill.js"></script>
+<script src="//cdn.quilljs.com/1.3.6/quill.min.js"></script>
+
+<!-- Theme included stylesheets -->
+<link href="//cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<link href="//cdn.quilljs.com/1.3.6/quill.bubble.css" rel="stylesheet">
+
+<!-- Core build with no theme, formatting, non-essential modules -->
+<link href="//cdn.quilljs.com/1.3.6/quill.core.css" rel="stylesheet">
+<script src="//cdn.quilljs.com/1.3.6/quill.core.js"></script>
+```
+
+### NPM
+
+将 Quill 添加为 [NPM](https://www.npmjs.com/) 依赖项并将其添加到您自己的构建工作流中，或使用包含的构建选项。 `dist/`文件夹中也包含已编译的样式表。
+
+```javascript
+npm install quill@1.3.6
+```
+
+### 直接下载
+
+Quill 的各个版本也提供直接 [下载](https://github.com/quilljs/quill/releases/tag/v1.3.6)。
+
+### 源码
+
+当然，完整的源代码总是可以在 [Github](https://github.com/quilljs/quill)上获得。
+
+```javascript
+git clone git@github.com:quilljs/quill.git
+```
 
 ## [配置](/docs/quill-translate/Documentation/3.configuration)
 
