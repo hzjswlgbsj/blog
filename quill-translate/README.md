@@ -1514,7 +1514,88 @@ git clone git@github.com:quilljs/quill.git
 
 ## [配置](/docs/quill-translate/Documentation/3.configuration)
 
-- [configuration](/docs/quill-translate/Documentation/3.configuration)
+Quill 允许多种方式来定制它以满足您的需求。 本节致力于调整现有功能。 有关添加新功能的信息，请参阅 [模块](/docs/quill-translate/Documentation/MODULES) 部分;有关样式，请参阅 [主题](/docs/quill-translate/Documentation/6.themes) 部分。
+
+### 容器
+
+Quill 需要一个容器，其中将附加编辑器。 您可以传入 CSS 选择器或 DOM 对象。
+
+```javascript
+var editor = new Quill(".editor"); // First matching element will be used
+```
+
+```javascript
+var container = document.getElementById("editor");
+var editor = new Quill(container);
+```
+
+```javascript
+var container = $(".editor").get(0);
+var editor = new Quill(container);
+```
+
+### 可选项
+
+要配置 Quill，请传入一个 options 对象:
+
+```javascript
+var options = {
+  debug: "info",
+  modules: {
+    toolbar: "#toolbar",
+  },
+  placeholder: "Compose an epic...",
+  readOnly: true,
+  theme: "snow",
+};
+var editor = new Quill("#editor", options);
+```
+
+识别以下键：
+
+#### bounds
+
+默认: `document.body`
+
+DOM 元素或 DOM 元素的 CSS 选择器，其中应限制编辑器的 ui 元素（即工具提示等）。 目前，它只考虑左右边界。
+
+#### debug
+
+默认: `warn`
+
+[调试](/docs/quill-translate/Documentation/API/7.extension?id=debug)的快捷方式。 注意 debug 是一种静态方法，会影响页面上其他 Quill 编辑器的实例。 默认情况下仅启用警告和错误消息。
+
+#### formats
+
+默认: All formats
+
+在编辑器中允许[格式](/docs/quill-translate/Documentation/4.formats?id=的白名单。 有关完整列表，请参阅格式。
+
+#### modules
+
+包含模块的集合和各自的选项。 有关更多信息，请参阅 [模块](/docs/quill-translate/Documentation/modules/MODULES).
+
+#### placeholder
+
+默认: None
+
+占位符文本，以显示编辑器何时为空。
+
+#### readOnly
+
+默认: `false`
+
+是否将编辑器实例化为只读模式。
+
+#### scrollingContainer
+
+默认: `null`
+
+DOM 元素或 DOM 元素的 CSS 选择器，指定哪个容器具有滚动条（即`overflow-y：auto`），if 是否已使用自定义 CSS 从默认`ql-editor`更改。 当 Quill 设置为 [自动增长](https://quilljs.com/playground/#autogrow)其高度时，必须修复滚动跳跃错误，并且滚动时负责另一个祖先容器。
+
+#### theme
+
+要使用的主题的名称。 内置选项是“泡沫”或“雪”。 无效或有价值的值将加载默认的最小主题。 请注意，主题的特定样式表仍需要手动包含。 有关更多信息，请参阅 [主题](/docs/quill-translate/Documentation/6.themes)。
 
 ## [格式](/docs/quill-translate/Documentation/4.formats)
 
