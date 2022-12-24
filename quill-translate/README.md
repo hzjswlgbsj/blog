@@ -1599,11 +1599,183 @@ DOM 元素或 DOM 元素的 CSS 选择器，指定哪个容器具有滚动条（
 
 ## [格式](/docs/quill-translate/Documentation/4.formats)
 
-- [formats](/docs/quill-translate/Documentation/4.formats)
+Quill 支持多种格式，包括 UI 控件和 API 调用。
+
+默认情况下，所有格式都已启用并允许存在于 Quill 编辑器中，并且可以使用 [formats](/docs/quill-translate/Documentation/3.configuration.md?id=formats) 选项进行配置。 这与在 [工具栏](/docs/quill-translate/Documentation/modules/1.toolbar.md) 中添加控件是分开的。 例如，您可以配置 Quill 以允许将粗体内容粘贴到工具栏中没有粗体按钮的编辑器中。
+
+原文这里是一个比较全的 quill 编辑器视图，我们可以点这个 [链接](https://quilljs.com/standalone/full/) 跳转过去。
+
+Quill 的格式主要是以下三种：
+
+### Inline
+
+- Background Color - `background`
+
+- Bold - `bold`
+
+- Color - `color`
+
+- Font - `font`
+
+- Inline Code - `code`
+
+- Italic - `italic`
+
+- Link - `link`
+
+- Size - `size`
+
+- Strikethrough - `strike`
+
+- Superscript/Subscript - `script`
+
+- Underline - `underline`
+
+### Block
+
+- Blockquote - `blockquote`
+
+- Header - `header`
+
+- Indent - `indent`
+
+- List - `list`
+
+- Text Alignment - `align`
+
+- Text Direction - `direction`
+
+- Code Block - `code-block`
+
+### Embeds
+
+- Formula - `formula` (requires [KaTex](https://katex.org/))
+
+- Image - `image`
+
+- Video - `video`
 
 ## [delta](/docs/quill-translate/Documentation/5.delta)
 
-- [delta](/docs/quill-translate/Documentation/5.delta)
+Deltas 是一种简单但富有表现力的格式，可用于描述 Quill 的内容和变化。 格式是 JSON 的严格子集，是人类可读的，并且可由机器轻松解析。 Deltas 可以描述任何 Quill 文档，包括所有文本和格式信息，而不会产生 HTML 的模糊性和复杂性。
+
+不要被其名称混淆 Delta-Deltas 代表文档和文档更改。 如果您将 Deltas 视为从一个文档转到另一个文档的指令，则 Deltas 表示文档的方式是从空文档开始表达指令。
+
+Deltas 作为独立的 [独立库](https://github.com/quilljs/delta/) 实现，允许在 Quill 之外使用。 它适用于 [OT(Operational Transform)](https://en.wikipedia.org/wiki/Operational_transformation)，并可用于实时协作，就像 Google Docs 一样。 有关 Deltas 的更深入解释，请参阅[设计 Delta 格式](/docs/quill-translate/Guides/6.designing-the-delta-format)。
+
+**注意**：不建议手动构造 Deltas，而是使用可链接的 [insert()](https://github.com/quilljs/delta#insert)，[delete()](https://github.com/quilljs/delta#delete) 和 [retain()](https://github.com/quilljs/delta#retain)方法来创建新的 Deltas。 您可以使用 import（）从 Quill 访问 Delta。
+
+### Document
+
+Delta 格式几乎是完全不言自明的，下面的例子描述了字符串 Gandalf The Grey，其中 Gandalf 是粗体，灰色是彩色#cccccc。
+
+```javascript
+{
+  ops: [
+    { insert: "Gandalf", attributes: { bold: true } },
+    { insert: " the " },
+    { insert: "Grey", attributes: { color: "#cccccc" } },
+  ];
+}
+```
+
+顾名思义，描述内容实际上是 Deltas 的一个特例。上面的例子更具体地说是插入一个粗体字符串“Gandalf”，一个未格式化的字符串“the”，后面是字符串颜色为#cccccc 的“Gray”。当 Deltas 用于描述内容时，可以将其视为将 Delta 应用于空文档时将创建的内容。
+
+由于 Deltas 是一种数据格式，因此属性密钥对的值没有固有的含义。例如，Delta 格式中没有任何内容规定颜色值必须是十六进制 - 这是 Quill 所做的选择，并且如果需要可以使用 [Parchment](https://github.com/quilljs/parchment/) 进行修改。
+
+#### Embeds
+
+对于非文本内容（如图像或公式），插入键可以是对象。 该对象应该有一个键，用于确定其类型。如果您使用 [Parchment](https://github.com/quilljs/parchment/) 构建自定义内容，这是 blotName。像文本一样，嵌入仍然可以有一个属性键来描述要应用于嵌入的格式。所有嵌入的长度都是 1。
+
+```javascript
+{
+  ops: [
+    {
+      // An image link
+      insert: {
+        image: "https://quilljs.com/assets/images/icon.png",
+      },
+      attributes: {
+        link: "https://quilljs.com",
+      },
+    },
+  ];
+}
+```
+
+#### Line Formatting
+
+与换行符相关联的属性描述该行的格式。
+
+```javascript
+{
+  ops: [
+    { insert: "The Two Towers" },
+    { insert: "\n", attributes: { header: 1 } },
+    { insert: "Aragorn sped on up the hill.\n" },
+  ];
+}
+```
+
+所有 Quill 文档必须以换行符结尾，即使最后一行没有应用格式。 这样，您将始终具有要应用行格式的字符位置。
+
+多行格式都是独家的(注：意思就是多行的格式只能出现一种，不能有多种的情况产生)。 例如，Quill 不允许行同时是标题和列表，尽管可以用 Delta 格式表示。
+
+### Changes
+
+当您为 Quill 的`text-change`事件注册一个侦听器时，您将获得的一个参数是描述更改内容的 Delta。 除了`insert`操作之外，此 Delta 还可能具有`delete`或`retain`操作。
+
+#### Delete
+
+`delete`操作确切地指示它意味着什么：删除下一个字符数。
+
+```javascript
+{
+  ops: [
+    { delete: 10 }, // Delete the next 10 characters
+  ];
+}
+```
+
+由于`delete`操作不包括已删除的*内容*，因此 Delta 不可逆。
+
+#### Retain
+
+`retain`操作只是意味着保留下一个字符数而不进行修改。 如果指定了`attributes`，它仍然意味着保留这些字符，但应用`attributes`对象指定的格式。 属性键的`null`值用于指定格式删除。
+
+从上面的“Gandalf the Grey”示例开始：
+
+```javascript
+// {
+//   ops: [
+//     { insert: 'Gandalf', attributes: { bold: true } },
+//     { insert: ' the ' },
+//     { insert: 'Grey', attributes: { color: '#cccccc' } }
+//   ]
+// }
+
+{
+  ops: [
+    // Unbold and italicize "Gandalf"
+    { retain: 7, attributes: { bold: null, italic: true } },
+
+    // Keep " the " as is
+    { retain: 5 },
+
+    // Insert "White" formatted with color #fff
+    { insert: "White", attributes: { color: "#fff" } },
+
+    // Delete "Grey"
+    { delete: 4 },
+  ];
+}
+```
+
+请注意，Delta 的指令始终从文档的开头开始。 并且由于绝对的`retain`操作，我们永远不需要为`delete`或`insert`操作指定索引。
+
+#### Playground
+
+原文这里是一个编辑器示例，可以实时操作，打开控制台可以看到每次操作的 delta，[传送门](https://quilljs.com/docs/delta/)。
 
 ## [主题](/docs/quill-translate/Documentation/6.themes)
 
