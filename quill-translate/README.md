@@ -1779,7 +1779,37 @@ Delta 格式几乎是完全不言自明的，下面的例子描述了字符串 G
 
 ## [主题](/docs/quill-translate/Documentation/6.themes)
 
-- [themes](/docs/quill-translate/Documentation/6.themes)
+主题允许您轻松地使编辑器看起来很好。 Quill 有两个正式支持的主题：[Snow](https://quilljs.com/docs/themes/#snow) 和 [Bubble](https://quilljs.com/docs/themes/#bubble)。
+
+### Usage
+
+```javascript
+<!-- Add the theme's stylesheet -->
+<link rel="stylesheet" href="//cdn.quilljs.com/1.3.6/quill.bubble.css">
+
+<script src="//cdn.quilljs.com/1.3.6/quill.js"></script>
+<script>
+var quill = new Quill('#editor', {
+  theme: 'bubble'   // Specify theme in configuration
+});
+</script>
+```
+
+### Bubble
+
+Bubble 是一个简单的基于工具提示的主题。
+在线把玩地址: [https://quilljs.com/standalone/bubble](https://quilljs.com/standalone/bubble)
+
+## Snow
+
+Snow 是一个干净，扁平的工具栏主题。
+在线把玩地址: [https://quilljs.com/standalone/snow](https://quilljs.com/standalone/snow)
+
+### Customization
+
+主题通过其 CSS 样式表主要控制 Quill 的视觉外观，并且可以通过覆盖这些规则轻松地进行许多更改。 与其他任何 Web 应用程序一样，这是最简单的方法，只需使用浏览器开发人员控制台检查元素以查看影响它们的规则。
+
+许多其他定制可以通过相应的模块完成。 例如，工具栏可能是最明显的用户界面，但大部分自定义都是通过 [Toolbar module](/docs/quill-translate/Documentation/MODULES/1.%20toolbar) 完成的。
 
 # 指南
 
