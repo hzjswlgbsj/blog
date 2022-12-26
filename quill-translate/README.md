@@ -1852,7 +1852,150 @@ var quill = new Quill("#editor", {
 
 ## [如何定制化 quill](/docs/quill-translate/Guides/2.how-to-customize-quill)
 
-- [how-to-customize-quill](/docs/quill-translate/Guides/2.how-to-customize-quill)
+Quill 的设计考虑了定制和扩展。 这是通过实现由粒度良好定义的 [API](/docs/quill-translate/Documentation/API)公开的小编辑器核心来实现的。 核心通过 [模块](/docs/quill-translate/Documentation/MODULES)进行扩充，使用您可以访问的相同[APIs](/docs/quill-translate/Documentation/API)。
+
+通常，常见的自定义在 [配置](/docs/quill-translate/Documentation/3.configuration)，[主题](/docs/quill-translate/Documentation/6.themes)和 CSS 的用户界面，[模块](/docs/quill-translate/Documentation/MODULES)进行扩充，使用您可以访问的相同 [APIs](/docs/quill-translate/Documentation/API)的功能和 [Parchment](https://quilljs.com/guides/how-to-customize-quill/#content-and-formatting)的编辑器内容中处理。
+
+### 配置
+
+Quill 更喜欢 Code over Configuration™，但是对于非常常见的需求，特别是在等效代码冗长或复杂的情况下，Quill 提供了 [配置](/docs/quill-translate/Documentation/3.configuration) 选项。 这将是一个很好的首选，以确定您是否甚至需要实现任何自定义功能。
+
+两个最强大的选项是`模块`和`主题`。 只需添加或删除单个 [模块](/docs/quill-translate/Documentation/MODULES) 或使用不同的 [主题](/docs/quill-translate/Documentation/6.themes)，您就可以彻底改变或扩展 Quill 可以做和做的事情。
+
+### 主题
+
+Quill 正式支持标准工具栏主题 [Snow](/docs/quill-translate/Documentation/6.themes) 和浮动工具提示主题 [Bubble](/docs/quill-translate/Documentation/6.themes)。 由于 Quill 不像许多遗留编辑器一样被限制在 iframe 中，因此可以使用现有主题之一使用 CSS 进行许多视觉修改。
+
+如果您想彻底更改 UI 交互，可以省略`主题`配置选项，这将为您提供无样式的 Quill 编辑器。 您仍然需要包含一个最小样式表，例如，确保在所有浏览器中呈现空间，并且有序列表具有适当的编号。
+
+```javascript
+<link rel="stylesheet" href="https://cdn.quilljs.com/1.3.6/quill.core.css">
+```
+
+从那里，您可以实现并附加自己的 UI 元素，如自定义下拉列表或工具提示。 [Cloning Medium with Parchment](/docs/quill-translate/Guides/5.cloning-medium-with-parchment)的最后一部分提供了一个实例。
+
+### 模块
+
+Quill 采用模块化架构设计，由一个小型编辑核心组成，周围环绕着增强其功能的模块。 其中一些功能对于编辑非常不可或缺，例如管理撤消和重做的 [历史记录](/docs/quill-translate/Documentation/modules/3.history) 模块。 由于所有模块都使用暴露给开发人员的相同公共 [API](/docs/quill-translate/Documentation/API)，因此在必要时甚至可以交换核心模块。
+
+与 Quill 的核心本身一样，许多 [模块](/docs/quill-translate/Documentation/MODULES) 都公开了其他配置选项和 API。 在决定更换模块之前，请先查看其文档。 通常，您所需的自定义已经实现为配置或 API 调用。
+
+否则，如果您想彻底改变现有模块已经涵盖的功能，您可以简单地不包含它 - 或者在主题默认包含它时明确地排除它 - 并使用相同的 [API](/docs/quill-translate/Documentation/API) 实现您对 Quill 外部的喜好功能 默认模块使用。
+
+```javascript
+var quill = new Quill("#editor", {
+  modules: {
+    toolbar: false, // Snow includes toolbar by default
+  },
+  theme: "snow",
+});
+```
+
+需要包含一些模块 - [剪贴板](/docs/quill-translate/Documentation/modules/4.clipboard)，[键盘](/docs/quill-translate/Documentation/modules/2.keyboard) 和 [历史](/docs/quill-translate/Documentation/modules/3.history) - 作为核心功能，取决于它们提供的 API。 例如，即使 undo 和 redo 是基本的，预期的编辑器功能，本机浏览器行为处理也是不一致和不可预测的。 历史记录模块通过实现自己的撤消管理器并将`undo（）`和`redo（）`公开为 API 来弥补差距。
+
+尽管如此，坚持使用 Quill 模块化设计，您仍然可以通过实现自己的撤消管理器来替换历史记录模块，从而彻底改变撤消和重做或任何其他核心功能的工作方式。 只要您实现相同的 API 接口，Quill 就会很乐意使用您的替换模块。 通过继承现有模块并覆盖要更改的方法，可以轻松完成此操作。 查看 [模块](/docs/quill-translate/Documentation/MODULES) 文档，了解覆盖核心 [剪贴板](/docs/quill-translate/Documentation/modules/4.clipboard) 模块的一个非常简单的示例。
+
+最后，您可能希望添加现有模块未提供的功能。 在这种情况下，可以方便地将其组织为 Quill 模块，[Building A Custom Module](/docs/quill-translate/Guides/4.build-a-custom-module)指南涵盖了该模块。 当然，在您的应用程序代码中，将此逻辑与 Quill 分开肯定是有效的。
+
+### 内容和格式
+
+Quill 允许通过其文档模型 [Parchment](https://github.com/quilljs/parchment/) 修改和扩展它理解的内容和格式。 内容和格式在 Parchment 中表示为 Blots 或 Attributors，它们大致对应于 DOM 中的节点或属性。
+
+#### 类 vs 内联
+
+Quill 在可能的情况下使用类而不是内联样式属性，但两者都实现供您选择。 一个实际的例子是作为 [Playground snippet](https://quilljs.com/playground/#class-vs-inline-style) 实现的。
+
+```javascript
+var ColorClass = Quill.import("attributors/class/color");
+var SizeStyle = Quill.import("attributors/style/size");
+Quill.register(ColorClass, true);
+Quill.register(SizeStyle, true);
+
+// Initialize as you would normally
+var quill = new Quill("#editor", {
+  modules: {
+    toolbar: true,
+  },
+  theme: "snow",
+});
+```
+
+#### 自定义 Attributors
+
+除了选择特定的 Attributor 之外，您还可以自定义现有的 Attributor。 以下是添加其他字体的字体白名单示例。
+
+```javascript
+var FontAttributor = Quill.import("attributors/class/font");
+FontAttributor.whitelist = [
+  "sofia",
+  "slabo",
+  "roboto",
+  "inconsolata",
+  "ubuntu",
+];
+Quill.register(FontAttributor, true);
+```
+
+请注意，您仍需要将这些类的样式添加到 CSS 文件中。
+
+```javascript
+<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+<style>
+.ql-font-roboto {
+  font-family: 'Roboto', sans-serif;
+}
+</style>
+```
+
+#### 自定义 Blots
+
+Blots 代表的格式也可以定制。 以下是如何更改用于表示粗体格式的 DOM 节点。
+
+```javascript
+var Bold = Quill.import("formats/bold");
+Bold.tagName = "B"; // Quill uses <strong> by default
+Quill.register(Bold, true);
+
+// Initialize as you would normally
+var quill = new Quill("#editor", {
+  modules: {
+    toolbar: true,
+  },
+  theme: "snow",
+});
+```
+
+#### 扩展 Blots
+
+您还可以扩展现有格式。 这是一个列表项的快速 ES6 实现，不允许格式化其内容。 代码块以这种方式实现。
+
+```javascript
+var ListItem = Quill.import("formats/list/item");
+
+class PlainListItem extends ListItem {
+  formatAt(index, length, name, value) {
+    if (name === "list") {
+      // Allow changing or removing list format
+      super.formatAt(name, value);
+    }
+    // Otherwise ignore
+  }
+}
+
+Quill.register(PlainListItem, true);
+
+// Initialize as you would normally
+var quill = new Quill("#editor", {
+  modules: {
+    toolbar: true,
+  },
+  theme: "snow",
+});
+```
+
+您可以通过调用`console.log（Quill.imports）;`来查看可用的 Blots 和 Attributors 列表。 不支持直接修改此对象。 请改用 [Quill.register](/docs/quill-translate/Documentation/API/7.extension)。
+
+关于 Parchment ，Blots 和 Attributors 的完整参考可以在 Parchment 自己的 [README](https://github.com/quilljs/parchment/) 中找到。 要进行深入的演练，请查看 [Cloning Medium with Parchment](/docs/quill-translate/Guides/5.cloning-medium-with-parchment)，它以 Quill 理解纯文本开头，添加所有 [Medium](https://medium.com/) 支持的格式。 大多数情况下，您不必从头开始构建格式，因为大多数格式已经在 Quill 中实现，但它仍然有助于理解 Quill 如何在更深层次上工作。
 
 ## [添加 quill 到应用](/docs/quill-translate/Guides/3.adding-quill-to-your-build-pipeline)
 
