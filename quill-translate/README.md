@@ -2058,7 +2058,192 @@ export default Quill;
 
 ## [构建自定义模块](/docs/quill-translate/Guides/4.build-a-custom-module)
 
-- [build-a-custom-module](/docs/quill-translate/Guides/4.build-a-custom-module)
+Quill 作为编辑器的核心优势在于其丰富的 API 和强大的定制功能。 当您在 Quill API 的基础上实现功能时，将其组织为模块可能会很方便。出于本指南的目的，我们将介绍一种构建字计数器模块的方法，这是许多文字处理器中常见的功能。
+
+> 注意：内部模块是 Quill 的功能组织的多少。您可以通过实现自己的默认模块并使用相同的名称注册它们来覆盖这些 [默认模块](/docs/quill-translate/Documentation/MODULES)。
+
+### Counting Words
+
+单词计数器的核心只是计算编辑器中的单词数，并在某些 UI 中显示该值。 因此我们需要：
+
+1. 在 Quill 中监听文本更改。
+
+2. 计算单词数量。
+
+3. 显示此值。
+
+让我们直接进入一个完整的例子吧！
+
+```js
+// Implement and register module
+Quill.register("modules/counter", function (quill, options) {
+  var container = document.querySelector("#counter");
+  quill.on("text-change", function () {
+    var text = quill.getText();
+    // There are a couple issues with counting words
+    // this way but we'll fix these later
+    container.innerText = text.split(/\s+/).length;
+  });
+});
+
+// We can now initialize Quill with something like this:
+var quill = new Quill("#editor", {
+  modules: {
+    counter: true,
+  },
+});
+```
+
+注：原文这里是一个 codepen 的视图，我们可以直接通过 [这个链接](https://codepen.io/quill/pen/bZkWKA) 过去。
+
+这就是为 Quill 添加自定义模块所需的全部内容！函数可以被 [注册](/docs/quill-translate/Documentation/API/7.extension) 为模块，并且这个函数会被注入 Quill 对象以及相关联的 option。
+
+译者注：
+这个`options`，指的是你在注册模块的时候自己那个模块里面自定义的一下变量，如下代码
+
+```javascript
+var quill = new Quill("#editor", {
+  modules: {
+    counter: {
+      container: "#counter",
+      unit: "word",
+    },
+  },
+});
+```
+
+这里的`options`就是这个对象：
+
+```js
+{
+  container: '#counter',
+  unit: 'word'
+}
+```
+
+可以看 codepen 的那个代码，就知道是什么意思了，可以在 codepen 的页面下方开启 console。
+
+### Using Options
+
+模块被传递一个`option`对象，该对象可以用来微调所需的行为。我们可以用它来接受计数器容器的选择器，而不是硬编码的字符串。我们还可以自定义计数器来计数单词或字符:
+
+```js
+Quill.register("modules/counter", function (quill, options) {
+  var container = document.querySelector(options.container);
+  quill.on("text-change", function () {
+    var text = quill.getText();
+    if (options.unit === "word") {
+      container.innerText = text.split(/\s+/).length + " words";
+    } else {
+      container.innerText = text.length + " characters";
+    }
+  });
+});
+
+var quill = new Quill("#editor", {
+  modules: {
+    counter: {
+      container: "#counter",
+      unit: "word",
+    },
+  },
+});
+```
+
+注：原文这里是一个 codepen 的视图，我们可以直接通过 [这个链接](https://codepen.io/quill/pen/OXqmEp) 过去。
+
+### Constructors
+
+由于任何函数都可以注册为 Quill 模块，我们可以将我们的计数器实现为 ES5 构造函数或 ES6 类。 这允许我们直接访问和使用模块。
+
+```js
+var Counter = function (quill, options) {
+  this.quill = quill;
+  this.options = options;
+  var container = document.querySelector(options.container);
+  var _this = this;
+  quill.on("text-change", function () {
+    var length = _this.calculate();
+    container.innerText = length + " " + options.unit + "s";
+  });
+};
+
+Counter.prototype.calculate = function () {
+  var text = this.quill.getText();
+  if (this.options.unit === "word") {
+    return text.split(/\s+/).length;
+  } else {
+    return text.length;
+  }
+};
+
+Quill.register("modules/counter", Counter);
+
+var quill = new Quill("#editor", {
+  modules: {
+    counter: {
+      container: "#counter",
+      unit: "word",
+    },
+  },
+});
+
+var counter = quill.getModule("counter");
+
+// We can now access calculate() directly
+console.log(counter.calculate(), "words");
+```
+
+注：原文这里是一个 codepen 的视图，我们可以直接通过 [这个链接](https://codepen.io/quill/pen/BzbRVR) 过去。
+
+### Wrapping It All Up
+
+现在让我们抛光 ES6 中的模块并修复一些讨厌的错误。 这里的所有都是它的！(译者注：这是一段 ES6 的语法，需要 babel)
+
+```js
+class Counter {
+  constructor(quill, options) {
+    this.quill = quill;
+    this.options = options;
+    this.container = document.querySelector(options.container);
+    quill.on("text-change", this.update.bind(this));
+    this.update(); // Account for initial contents
+  }
+
+  calculate() {
+    let text = this.quill.getText();
+    if (this.options.unit === "word") {
+      text = text.trim();
+      // Splitting empty text returns a non-empty array
+      return text.length > 0 ? text.split(/\s+/).length : 0;
+    } else {
+      return text.length;
+    }
+  }
+
+  update() {
+    var length = this.calculate();
+    var label = this.options.unit;
+    if (length !== 1) {
+      label += "s";
+    }
+    this.container.innerText = length + " " + label;
+  }
+}
+
+Quill.register("modules/counter", Counter);
+
+var quill = new Quill("#editor", {
+  modules: {
+    counter: {
+      container: "#counter",
+      unit: "word",
+    },
+  },
+});
+```
+
+注：原文这里是一个 codepen 的视图，我们可以直接通过 [这个链接](https://codepen.io/quill/pen/BzbRVR) 过去。
 
 ## [用 parchment 克隆 medium](/docs/quill-translate/Guides/5.cloning-medium-with-parchment)
 
