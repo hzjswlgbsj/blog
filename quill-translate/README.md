@@ -3111,7 +3111,72 @@ var delta = {
 
 ## [对比其他编辑器](/docs/quill-translate/Guides/7.comparison-with-other-rich-text-editors)
 
-- [comparison-with-other-rich-text-editors](/docs/quill-translate/Guides/7.comparison-with-other-rich-text-editors)
+### CKEditor and TinyMCE
+
+CKEditor 和 TinyMCE 都使用得非常广泛，已经存在了十多年。 Quill 介绍了几个将它与这些传统编辑器分开的新想法：
+
+- 它将 contenteditable 视为输入，而不是完整的编辑器或 API。浏览器从来没有完全同意或指定 contentteditable 的完整范围。留给他们自己的解释，每一个都以不同的实现结束，这些实现都有自己的怪癖和大量的 bug，因此赢得了`contenteditable`的恶名。今天仍然有可能使用`contentteditable`的 api 崩溃整个浏览器。
+
+- 它在 DOM 之上提供了实用的 API。大多数 CKEditor 和 TinyMCE 的 API 在现有 DOM API 之上提供的仅仅是语法糖。Quill 维护一个内部文档模型，并且不依赖 DOM 作为事实的来源，这使得它能够为文本编辑提供更加强大和相关的 api。
+
+- 它允许自定义和新添加的格式和内容。Quill 认为 web 是一个目标输出，而不仅仅是纸张。因此，除了支持文字处理器中常见的传统格式（如粗体，斜体和列表）之外，Quill 还允许定义以前未想象过的全新格式和内容。Quill 的用户已经添加了自定义功能来嵌入幻灯片，交互式清单和 3D 模型。
+
+尽管它们之间存在差异，但 CKEditor 和 TinyMCE 会进行比较，因为它们与 Quill 的区别在于它们。 然而，如果出现以下情况，CKEditor 或 TinyMCE 可能是更好的选择：
+
+- 您需要支持非常旧的浏览器。 Quill 遵循许多其他 Javascript 库的策略，支持每个主要浏览器的最新两个版本。
+
+- 您需要使用任意 HTML 直接设置或编辑基础 HTML。Quill 不支持使用 innerHTML 对其内容进行任意修改，因为它会导致令人惊讶和错误的行为。相反，它提供了一致的 [API](/docs/quill-translate/Documentation/API) 用于修改以及通过 [Parchment](https://github.com/quilljs/parchment/) 定义新格式和内容的能力。
+
+### Draft
+
+Draft 经常与鹅毛笔相比较，但是根据它自己的描述，Draft 是一个用于 React 的富文本编辑器框架。它提供了创建编辑器的构建块，但本身还不能使用。然而，将 Quill 的内部结构与 Draft 进行比较仍然是值得的：
+
+- 在 Quill 1.0 之前，Draft 允许对其内容和文档模型进行更多的定制，但现在情况已经不同了。Quill 现在公开了它的文档模型，称为 [Parchment](https://github.com/quilljs/parchment/)，并且此时允许自定义比 Draft 更深层次。[Cloning Medium with Parchment](/docs/quill-translate/Guides/5.cloning-medium-with-parchment)可以很好地证明 Parchment 的可能性。
+
+- Draft 将节点组织成两个级别:块和内联。Parchment 也有块和内联层，但内联节点可以嵌套，允许语义输出，如`<strong><em>更强</em></strong>`，而 Draft 中的等效节点必须只使用一个内联格式节点并使用内联样式：
+
+```js
+<span
+  data-offset-key="1oo4h-0-0"
+  style="font-weight: bold; font-style: italic;"
+>
+  <span data-text="true">Stronger</span>
+</span>
+```
+
+- Draft 的 API 继承了 React 中更适合一般网站的原语和想法。Quill 唯一的用例是富文本内容，允许使用专门针对该用例的更简单的 API。API 的简单性是主观的，所以最好的度量标准可能是考虑一个常见的任务，比如用粗体显示一系列文本，并尝试找出如何在 Quill 中实现它，以及如何在 Draft 中实现它。
+
+- React，React DOM 和 immutable.js 是 Draft 的依赖项，它们为尚未使用 React 的用户增加了很多权重。
+
+主要区别在于 Quill 是一个随时可用的富文本编辑器，可以考虑用户交互并考虑和实现接口。Draft 提供了构建块，但是您必须自己实现数据层上面的所有部分。
+
+### ProseMirror
+
+ProseMirror 是一个相对较新的技术，但是已经引起了广泛的关注，它是由 CodeMirror 的同一作者创建的。据说，由于 ProseMirror 仍然处于开发阶段，因此对产品和实现进行有力的比较还为时过早，如其 README 中所述：
+
+> 注意：此项目处于 BETA 阶段。 它未经过全面测试，API 可能仍会在 0.x 版本中发生变化。 欢迎您使用它，但不要指望它非常稳定。
+
+相反，我们将比较想法和目标:
+
+- Quill 和 ProseMirror 都实现并维护一个数据模型，以便使用 API​​ 进行操作，而不是允许用户直接修改 DOM。
+
+- 支持实时协作。 Quill 用户已经在生产中这样做了。
+
+- Quill 的架构更加模块化，可以更轻松地定制内部结构。 可以在 Quill 中交换处理基本功能（如复制/粘贴和撤消/重做）的核心模块。
+
+- ProseMirror 倾向于广泛使用 API​​ 方法，配置和变量。Quill 把开发人员当作用户来对待，并设计一个有组织的 API 表面，明智地决定公开什么，有时会隐藏混乱的方法，或者创建统一多个内部操作的新方法。
+
+### Trix
+
+Trix 是另一个新发布的编辑器，它在富文本编辑中采用了许多现代思想。这包括在 DOM 之上的数据模型，并将`contenteditable`视为输入，Quill 和其他现代编辑也接受这种输入。 此外，Quill 提供了一些优于 Trix 的显着优势：
+
+- 更多 [format](/docs/quill-translate/Documentation/4.formats) 支持。 Quill 支持 Trix 中的所有格式，还支持 Trix 不支持的文本颜色，字体，背景，大小，上标，下标，下划线，文本对齐，文本方向，语法突出显示的代码，视频和公式。
+
+- 允许自定义现有格式和内容，甚至添加新格式和内容。 Trix 以一种方式实现每种格式，并且不允许进一步定制。
+
+- 模块化的内部构件，可以配置甚至交换出去。Trix 被设计成一个整体。
+
+- Trix 提供了一个用户界面，用户可能需要使用定制的 CSS 对其进行优化。Quill 提供了两个漂亮的，随时可用的主题，一个以持久性 [toolbar](/docs/quill-translate/Documentation/6.themes?id=snow) 为中心，另一个围绕类似中型 [tooltip theme](/docs/quill-translate/Documentation/6.themes?id=bubble)。
 
 ## [升级 1.0](/docs/quill-translate/Guides/8.upgrading-to-1.0)
 
