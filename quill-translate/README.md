@@ -3180,7 +3180,129 @@ Trix 是另一个新发布的编辑器，它在富文本编辑中采用了许多
 
 ## [升级 1.0](/docs/quill-translate/Guides/8.upgrading-to-1.0)
 
-- [upgrading-to-1.0](/docs/quill-translate/Guides/8.upgrading-to-1.0)
+Quill 1.0 引入了旨在提高定制 Quill 能力的主要变化。 接口在可能的情况下保持不变，本指南有助于弥补差距。
+
+为了实现 1.0 的全部优势，我们鼓励对 Quill 1.0 采取全新的观点，并在本文档网站上重新审视基本主题。 通常情况下，你会发现即使你可以用旧的方式做事，也有一种更好的新方法。
+
+### Configuration
+
+- `styles` _已删除_ - 以前版本的 Quill 允许通过`<style>`添加注入自定义 CSS。 由于内容安全策略，此选项已被删除。 相反，你应该直接使用外部 CSS。
+
+### API
+
+- `getHTML` _已删除_ - 以前版本的 Quill 需要使用类名来标识行`ql-line`和`id`属性来标识特定行。 这不再是必需的，自定义 API 调用不再在 DOM 的现有 innerHTML 之上添加任何值。
+
+- `setHTML` _已删除_ - 与许多在 DOM 之上具有数据层的编辑器一样，Quill 不允许对底层 HTML 进行任意更改。以前 Quill 会检测到非法状态并对其进行更正，但这会使命名 setHTML 不真实，并且修正背后的推理是不直观的。 使用新的[pasteHTML]()（译者注：这个 api 已经找不到了）可以适当地满足或改进`setHTML`的大多数用例（因为光标保存要好得多）。
+
+- `addModule` _已删除_ - 模块现在根据初始的 Quill [configuration](/docs/quill-translate/Documentation/3.configuration)进行初始化，而不是使用单独的函数。
+
+- `onModuleLoad` _已删除_ - 模块加载由主题处理，类似的行为应该通过扩展主题来实现。
+
+- `destroy` _已删除_ - 不再需要，因为 Quill 不再保留对编辑器实例的引用，允许 Javascript 垃圾收集器按预期工作。
+
+- `destroy` _已更名_ - 现在，一种新的 API [format](/docs/quill-translate/Documentation/API/2.formatting?id=format)为所有选择状态提供格式化功能，包括之前在 prepareFormat`中介绍的那些状态。
+
+- 为了保持一致性，所有位置现在都是基于索引和长度的，而不是 [deleteText](/docs/quill-translate/Documentation/API/1.content?id=deletetext)、[formatText](/docs/quill-translate/Documentation/API/2.formatting?id=formattext)、[formatLine](/docs/quill-translate/Documentation/API/2.formatting?id=formatline)有时使用的开始和结束表示，以及 selection Api（如 [getSelection](/docs/quill-translate/Documentation/API/3.selection?id=getselection)、[setSelection](/docs/quill-translate/Documentation/API/3.selection?id=setselection) 和 [select-change](/docs/quill-translate/Documentation/API/5.events?id=selection-change)事件）使用的 Range 对象有时使用的开始和结束表示。
+
+- `registerModule` _已更名_ - 现在使用一个新的 API [register](/docs/quill-translate/Documentation/API/7.extension?id=register) 来向寄存器注册所有模块、主题和格式。
+
+- `require` _已更名_ - 为了与 ES6 保持一致，重命名为`import`。
+
+- `addContainer` _已变更_ - [第二个参数](/docs/quill-translate/Documentation/API/7.extension?id=addcontainer)被更改为允许在任何容器之前插入，而不仅仅是编辑器。因此，它不再是一个可选的布尔值，而是一个可选的 HTMLElement。
+
+### Modules
+
+- 工具栏在使用自定义 HTML 元素初始化时，需要按钮为实际的 HTMLButtonElements。 以前它允许任何具有适当类名的元素。
+
+- [Snow](/docs/quill-translate/Documentation/6.themes)工具栏不再添加或使用`ql-format-separator`，并将`ql-format-group`重命名为`ql-formats`。
+
+- 作者身份和多光标模块已被临时删除。 类似的功能将在以后重新添加，可以单独使用，也可以在捆绑的协作模块中重新添加。
+
+- UndoManager 已重命名为 [History](/docs/quill-translate/Documentation/modules/3.history)。
+
+- PasteManager 已重命名为 [Clipboard](/docs/quill-translate/Documentation/modules/4.clipboard)，并将提供自定义复制和粘贴行为。
+
+- LinkTooltip 已被移动到特定主题。随着 [Bubble](/docs/quill-translate/Documentation/6.themes)、videos 和 [formulas](/docs/quill-translate/Documentation/4.formats) 的添加，不再需要为链接打开单独的工具提示作为它自己的通用 UI 元素。旧的工具提示行为仍然存在于 Snow 中，但现在是特定于该主题的。
+
+- ImageTooltip 已被删除，以支持更简单和更原生的流程。 图像按钮现在打开 OS 文件选择器，所选图像文件作为 base64 图像插入编辑器。
+
+### Deltas
+
+某些内容的默认 Delta 表示已更改。 在所有情况下，在输入中使用 Deltas 的方法仍然支持旧格式，例如`setContents`和`updateContents`。但输出的 Deltas，例如`text-change`和`getContents`报告的将是新的形式。由于 [Parchment](https://github.com/quilljs/parchment) 现在允许自定义内容和格式，因此可以完全自定义这些 Delta 表示。
+
+```js
+var newImage = {
+  insert: { image: "url" },
+};
+var oldImage = {
+  insert: 1,
+  attributes: {
+    image: "url",
+  },
+};
+
+var newOrderedList = {
+  insert: "\n",
+  attributes: {
+    list: "ordered",
+  },
+};
+var oldOrderedList = {
+  insert: "\n",
+  attributes: {
+    list: true,
+  },
+};
+
+var newBullettedList = {
+  insert: "\n",
+  attributes: {
+    list: "bullet",
+  },
+};
+var oldBullettedList = {
+  insert: "\n",
+  attributes: {
+    bullet: true,
+  },
+};
+```
+
+### Defaults
+
+- Quill 以前使用内联样式来实现字体族和大小。类实现现在是默认的。要还原此功能，请参阅 [内容和格式](/docs/quill-translate/Guides/2.how-to-customize-quill?id=%E5%86%85%E5%AE%B9%E5%92%8C%E6%A0%BC%E5%BC%8F)。
+
+### Browsers
+
+- Quill 现在跟随其他主要的开源库，支持主要浏览器版本的最后两个版本。 已删除对 IE9 和 IE10 的支持，并添加了 MS Edge。
+
+- Android 浏览器支持现在适用于 Android 上的 Chrome，而不是谷歌已逐步停止支持的 Android 浏览器。
+
+### Improvements
+
+- 能够添加新格式和内容，或使用 [Parchment](https://github.com/quilljs/parchment) 修改现有格式和内容。
+
+- 添加了对嵌套列表，上标，下标，内联代码，代码块，标题，块引用，文本方向，视频和论坛支持的支持。
+
+- 能够使用类而不是内联样式进行格式化。
+
+- 新的基于工具提示的主题叫做 [Bubble](/docs/quill-translate/Documentation/6.themes?id=bubble)。
+
+- 使用格式数组改进 [工具栏](/docs/quill-translate/Documentation/modules/1.toolbar) 初始化并使用自定义值进行自定义。
+
+- 工具栏图标现在使用 SVG 而不是内联 PNG，允许自由调整图标大小，同时保持清晰度。 CSS 现在也可用于轻松更改活动状态颜色，而不是默认的＃06c 蓝色。
+
+- 改进了在 [剪贴板](/docs/quill-translate/Documentation/modules/4.clipboard) 中自定义粘贴解释的功能。
+
+- 提高了自定义 [键盘处理程序](/docs/quill-translate/Documentation/modules/2.keyboard) 的能力。
+
+- 占位符配置选项。
+
+- 可编辑 [语法高亮](/docs/quill-translate/Documentation/modules/5.syntax) 代码块。
+
+- 几个新的 [API](/docs/quill-translate/Documentation/API)。
+
+- 修复大量 bug。
 
 ## [升级 2.0](/docs/quill-translate/Guides/9.upgrading-to-2.0)
 
