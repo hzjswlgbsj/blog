@@ -40,7 +40,7 @@
 
 ## 🍃 数据结构与算法
 
-算法这块内容可看看我的[算法仓库](https://github.com/hzjswlgbsj/algorithm-study)，里面主要是 Letcode 的一些解题思路。
+算法这块内容可看看我的 [算法仓库](https://github.com/hzjswlgbsj/algorithm-study)，里面主要是 Letcode 的一些解题思路。
 
 - [链表](algorithm/LinkedList.md)
 - [队列](algorithm/Queue.md)
