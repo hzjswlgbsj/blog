@@ -45,6 +45,7 @@
 - [位运算](algorithm/BitManipulation.md)
 - [链表](algorithm/LinkedList.md)
 - [队列](algorithm/Queue.md)
+- [树](algorithm/Tree.md)
 - [排序算法](algorithm/Sort.md)
 
 <!-- ## 🍁 Quill 文档翻译 -->
