@@ -192,7 +192,7 @@ require.extensions：根据文件的后缀名，调用不同的执行函数
 ## Nodejs 异步
 
 先放上 Nodejs 的系统架构图
-![image.png](https://cdn.nlark.com/yuque/0/2021/png/160765/1626601431388-9140e6e7-b135-41a1-9650-b12595d78b33.png#averageHue=%23332b20&crop=0&crop=0&crop=1&crop=1&height=247&id=BkDRb&margin=%5Bobject%20Object%5D&name=image.png&originHeight=317&originWidth=800&originalType=binary&ratio=1&rotation=0&showTitle=false&size=166461&status=done&style=none&title=&width=624)
+![image.png](https://lib.sixtyden.com/nodejs%20system.png)
 
 ### 非阻塞 I/O
 
