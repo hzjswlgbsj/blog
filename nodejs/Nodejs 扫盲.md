@@ -188,3 +188,225 @@ require.extensions：根据文件的后缀名，调用不同的执行函数
 ### 参考
 
 1. [阮一峰讲的简洁直接读一遍便可扫盲](https://javascript.ruanyifeng.com/nodejs/module.html)
+
+## Nodejs 异步
+
+先放上 Nodejs 的系统架构图
+![image.png](https://cdn.nlark.com/yuque/0/2021/png/160765/1626601431388-9140e6e7-b135-41a1-9650-b12595d78b33.png#averageHue=%23332b20&crop=0&crop=0&crop=1&crop=1&height=247&id=BkDRb&margin=%5Bobject%20Object%5D&name=image.png&originHeight=317&originWidth=800&originalType=binary&ratio=1&rotation=0&showTitle=false&size=166461&status=done&style=none&title=&width=624)
+
+### 非阻塞 I/O
+
+- I/O 即 Input/Output，一个系统的输入输出
+- 阻塞 I/O 和 非阻塞 I/O 的区别在于**系统接收输入再到输出期间，能不能接收其他输入**
+
+有如下代码：
+
+```javascript
+/**
+ * 用glob包来做文件结构获取，以此解释非阻塞i/o
+ */
+
+const glob = require("glob");
+let res = null;
+
+// 同步方式
+// console.time('glob')
+// res = glob.sync(__dirname + '/**/*')
+// console.timeEnd('glob')
+// console.log(res)
+
+// 异步方式
+console.time("glob");
+glob(__dirname + "/**/*", (err, result) => {
+  res = result;
+  // console.log(res)
+  console.log("get result!");
+});
+console.timeEnd("glob");
+```
+
+执行同步操作就相当于阻塞 I/O，得到的结果如下
+![image.png](https://cdn.nlark.com/yuque/0/2021/png/160765/1626604236877-5f85afd1-ef4a-43b1-8276-aab45b4960a1.png#averageHue=%232c2b2a&crop=0&crop=0&crop=1&crop=1&height=87&id=Dw3a0&margin=%5Bobject%20Object%5D&name=image.png&originHeight=96&originWidth=688&originalType=binary&ratio=1&rotation=0&showTitle=false&size=14236&status=done&style=none&title=&width=624)
+
+执行异步操作就相当于非阻塞 I/O，得到的结果如下
+
+![image.png](https://cdn.nlark.com/yuque/0/2021/png/160765/1626604288664-d8a9d17b-cea1-48c5-a8a4-eb5500dcf9b9.png#averageHue=%232c2a2a&crop=0&crop=0&crop=1&crop=1&height=117&id=uM972&margin=%5Bobject%20Object%5D&name=image.png&originHeight=128&originWidth=682&originalType=binary&ratio=1&rotation=0&showTitle=false&size=16544&status=done&style=none&title=&width=624)
+
+### 事件循环
+
+事件循环是 Nodejs 实现非阻塞 I/O 的基础，他们都是属于 LIBUV 这个 c++ 库。
+一下代码简单理解时间循环（因为我已经理解浏览器运行环境的事件循环机制，所以这边不详细记录）
+
+```javascript
+const eventloop = {
+  queue: [],
+  loop() {
+    while (this.queue.length) {
+      let callback = this.queue.shift();
+      callback();
+    }
+
+    setTimeout(this.loop.bind(this), 50);
+  },
+  add(callback) {
+    this.queue.push(callback);
+  },
+};
+
+eventloop.loop();
+
+setTimeout(() => {
+  eventloop.add(() => {
+    console.log(1);
+  });
+}, 500);
+
+setTimeout(() => {
+  eventloop.add(() => {
+    console.log(2);
+  });
+}, 800);
+
+// 结果
+// 1
+// 2
+```
+
+### Promise
+
+- 当前事件循环的不到的结果（给你的是一个「承诺」），但是未来的事件循环会给到你结果（兑现「承诺」）
+- promise 是一个状态机
+  - pending
+  - fulfilled/resolve
+  - rejected
+
+简单使用
+
+```javascript
+const promise = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    resolve(3);
+  }, 300);
+
+  // 这个是无效的，promise的状态是不可扭转的
+  setTimeout(() => {
+    reject(new Error());
+  }, 500);
+})
+  .then((res) => {
+    // resolve 状态会立即执行then
+    console.log(res);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+
+console.log(promise);
+
+setTimeout(() => {
+  console.log(promise);
+}, 800);
+```
+
+- .then 和 .catch
+
+  - resolved 状态的 Promise 会回调后面的第一个 .then
+  - resolved 状态的 Promise 会回调后面的第一个 .catch
+  - 任何一个 rejected 状态且后面没有 .catch 的 Promise，都会造成浏览器/node 环境的全局错误
+
+- 执行 then 和 catch 会返回一个新的 Promise，该 Promise 最终状态根据 then 和 catch 的回调函数的执行结果决定
+  - 如果回调函数最终是 throw，该 Promise 是 rejected 状态
+  - 如果回调函数最终是 return，该 Promise 是 resolved 状态
+  - 但如果回调函数最终 return 了一个 Promise，该 Promise 会和回调函数 return 的 Promise 状态保持一致
+
+以上总结可由一下代码来理解，假设我们去面试，面试一共有 3 轮，3 轮全部通过你开心的笑了。某一轮失败你就哭了，并且 hr 通知你到底是在第几面挂掉的。
+
+```javascript
+(function () {
+  const promise = interview(1)
+    .then(() => {
+      return interview(2);
+    })
+    .then(() => {
+      return interview(3);
+    })
+    .then(() => {
+      console.log("smile");
+    })
+    .catch((err) => {
+      console.log("cry at " + err.round + " round");
+    });
+  function interview(round) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (Math.random() > 0.5) {
+          resolve("success");
+        } else {
+          const error = new Error("fail");
+          error.round = round;
+          reject(error);
+        }
+      }, 500);
+    });
+  }
+})();
+```
+
+### async/await
+
+定义两个函数，分别为 async 函数 和 返回 Promise 的普通函数，并且去执行他们，会发现他们返回值是一样的 Promise
+
+```javascript
+const asyncFun = async function () {
+  return 1;
+};
+
+const promiseFun = function () {
+  return new Promise((resolve) => {
+    resolve(1);
+  });
+};
+
+console.log(asyncFun());
+console.log(promiseFun());
+
+// Promise { 1 }
+// Promise { 1 }
+```
+
+- async function 是 Promise 的语法糖封装
+- 异步编程的终极解决方案 - 以同步的方式写异步代码
+  - await 关键字可以「暂停」async function 的执行
+  - await 关键字可以以同步的写法获取 Promise 的执行结果
+  - try-catch 可以获取 await 所得到的的结果
+- 他是一个可以穿越事件循环机制的 function
+
+下面，我们来改造一下上面的 3 次面试的代码，你看看代码量。
+
+```javascript
+(async function () {
+  try {
+    // await interview(1)
+    // await interview(2)
+    // await interview(3)
+    await Promise.all([interview(1), interview(2), interview(3)]);
+    console.log("smile");
+  } catch (error) {
+    return console.log(`cry at ${error.round}`);
+  }
+})();
+
+function interview(round) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (Math.random() > 0.5) {
+        resolve("success");
+      } else {
+        const error = new Error("fail");
+        error.round = round;
+        reject(error);
+      }
+    }, 500);
+  });
+}
+```
