@@ -1,5 +1,7 @@
 ## 介绍
 
+---
+
 ### Nodejs 是什么？
 
 - Nodejs 是一个基于 Chrome V8 引擎的 JavaScript 运行环境
@@ -29,6 +31,8 @@ V8：你的代码被 V8 引擎解析，同时 V8 提供与操作系统交互的�
 - 后续也影响到了浏览器端的模块化
 
 ## Commonjs 规范
+
+---
 
 ### 1.简介
 
@@ -190,6 +194,8 @@ require.extensions：根据文件的后缀名，调用不同的执行函数
 1. [阮一峰讲的简洁直接读一遍便可扫盲](https://javascript.ruanyifeng.com/nodejs/module.html)
 
 ## Nodejs 异步
+
+---
 
 先放上 Nodejs 的系统架构图
 ![image.png](https://lib.sixtyden.com/nodejs%20system.png)
@@ -409,4 +415,177 @@ function interview(round) {
     }, 500);
   });
 }
+```
+
+## 什么是 HTTP 服务
+
+|-------------|
+| 5.应用层 |
+|-------------|
+| 4.传输层 |
+|-------------|
+| 3.网络层 |
+|-------------|
+| 2.数据链路层 |
+|-------------|
+| 1.物理层 |
+|-------------|
+
+- 一个网页请求，包含两次 HTTP 包交换
+  - 浏览器向 HTTP 服务器发送请求 HTTP 包
+  - HTTP 服务器想浏览器返回 HTTP 包
+- HTTP 服务套做什么事
+  - 解析进来的 HTTP 请求报文
+  - 返回对应的 HTTP 返回报文、
+
+### 简单实现一个 HTTP 服务
+
+Nodejs 的 http 模块
+
+```javascript
+const http = require("http");
+
+http
+  .createServer((req, res) => {
+    res.writeHead(200);
+    res.end("helle");
+  })
+  .listen(3000);
+
+// 在浏览器中访问 localhost:3000
+```
+
+下面是一个石头剪刀布游戏
+
+// game.js
+
+```javascript
+module.exports = function (playAction) {
+  if (["rock", "scissor", "paper"].indexOf === -1) {
+    throw new Error("invalid palyAction");
+  }
+  // 计算机电脑出的东西
+  let computerAction;
+  var random = Math.random() * 3;
+
+  if (random < 1) {
+    computerAction = "rock";
+  } else if (random > 2) {
+    computerAction = "scissor";
+  } else {
+    computerAction = "paper";
+  }
+
+  if (computerAction === playAction) {
+    return 0;
+  } else if (
+    (computerAction === "rock" && playAction === "paper") ||
+    (computerAction === "scissor" && playAction === "rock") ||
+    (computerAction === "paper" && playAction === "scissor")
+  ) {
+    return -1;
+  } else {
+    return 1;
+  }
+};
+```
+
+// index.js
+
+```javascript
+const http = require("http");
+const url = require("url");
+const fs = require("fs");
+const querystring = require("querystring");
+const game = require("./game");
+let playerWon = 0;
+let playerLastAction = null;
+let sameCount = 0;
+
+http
+  .createServer((request, response) => {
+    const parsedUrl = url.parse(request.url);
+    if (parsedUrl.pathname === "/favicon.ico") {
+      response.writeHead(200);
+      response.end();
+      return;
+    }
+
+    if (parsedUrl.pathname === "/game") {
+      const query = querystring.parse(parsedUrl.query);
+      const playerAction = query.action;
+      const gameResult = game(playerAction);
+      playerLastAction = playerAction;
+      if (playerWon >= 3 || sameCount === 9) {
+        response.writeHead(500);
+        response.end("我再也不和你玩了！");
+        return;
+      }
+
+      if (playerAction && playerAction === playerLastAction) {
+        sameCount++;
+      } else {
+        sameCount = 0;
+      }
+
+      if (sameCount > 3) {
+        response.writeHead(400);
+        response.end("你作弊！");
+        sameCount = 9;
+        return;
+      }
+
+      response.writeHead(200);
+      if (gameResult === 0) {
+        response.end("平局！");
+      } else if (gameResult === 1) {
+        response.end("你赢了！");
+        playerWon++;
+      } else {
+        response.end("你输了！");
+      }
+    }
+
+    if (parsedUrl.pathname === "/") {
+      fs.createReadStream(__dirname + "/index.html").pipe(response);
+    }
+  })
+  .listen(3000);
+```
+
+// index.html
+
+```javascript
+<!DOCTYPE html utf-8>
+<html>
+  <head>
+    <meta charset="UTF-8">
+  </head>
+  <body>
+    <div
+      id='output'
+      style='width: 600px; height: 400px;background-color: #eee; overflow: auto;'
+    ></div>
+    <button id='rock'>石头</button>
+    <button id='scissor'>剪刀</button>
+    <button id='paper'>布</button>
+  </body>
+  <script>
+    const $button = {
+      rock: document.getElementById('rock'),
+      scissor: document.getElementById('scissor'),
+      paper: document.getElementById('paper'),
+    }
+
+    const $output = document.getElementById('output')
+    Object.keys($button).forEach(key => {
+      $button[key].addEventListener('click', () => {
+        fetch(`http://${window.location.host}/game?action=${key}`)
+        .then((res => res.text()))
+        .then(text => $output.innerHTML += text + '
+')
+      })
+    })
+  </script>
+</html>
 ```
