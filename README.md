@@ -50,7 +50,7 @@
 
 ## 🍁 Nodejs 快速扫盲
 
-- [排序算法](nodejs/Nodejs扫盲.md)
+- [Nodejs 快速扫盲](nodejs/Nodejs扫盲.md)
 
 ## 🌾 翻译
 
