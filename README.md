@@ -1,5 +1,3 @@
-> 文章正在从语雀搬运中...
-
 大家好，这里是 [sixty's blog](https://www.sixtyden.com)，我将在这里写文章做总结，如果能帮助到你，欢迎 start！
 
 早期自己用 PHP 搭过博客，后来用 vue 重写，但是现在我使用 github + doscify 来维护博客，这种方式简单、高效，具备版本管理，不需要自己备份数据，专注于写文章本身，我把搭建过程写成了傻瓜式教程，[欢迎照搬](normal/Centos+Docker+Nginx+Doscify+Github搭建博客全教程.md)。
