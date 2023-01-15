@@ -50,6 +50,8 @@
 
 ## 🍁 Nodejs 快速扫盲
 
+- [排序算法](nodejs/Nodejs扫盲.md)
+
 ## 🌾 翻译
 
 - [Quill 中文文档 <small style='color: blue'>富文本编辑器</small>](quill-translate/README)
