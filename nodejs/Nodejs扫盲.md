@@ -457,7 +457,7 @@ http
 
 下面是一个石头剪刀布游戏
 
-// game.js
+**game.js**
 
 ```javascript
 module.exports = function (playAction) {
@@ -490,7 +490,7 @@ module.exports = function (playAction) {
 };
 ```
 
-// index.js
+**index.js**
 
 ```javascript
 const http = require("http");
@@ -553,7 +553,7 @@ http
   .listen(3000);
 ```
 
-// index.html
+**index.html**
 
 ```javascript
 <!DOCTYPE html utf-8>
