@@ -599,3 +599,286 @@ http
   </script>
 </html>
 ```
+
+## RPC 调用
+
+RPC（Remote Procedure Call，远程过程调用），可用 Ajax 来类比理解。
+
+### 相同点
+
+- 都是两个计算机之间的网络通信
+- 需要双方约定一个数据格式
+
+### 不同点
+
+- Ajax 使用 DNS 作为寻址服务，而 RPC 不一定
+- Ajax 应用层协议使用 HTTP，而 RPC 不一定使用，一般会使用**二进制协议**来取代 HTTP
+- Ajax 基于 HTTP、TCP，RPC 基于 TCP 或者 UDP
+
+### Node.js 的 buffer 模块
+
+**Buffer** 对象用于表示固定长度的字节序列。 许多 Node.js API 都支持 **Buffer**。
+
+**Buffer** 类是 JavaScript **Uint8Array** 类的子类，并使用涵盖额外用例的方法对其进行扩展。 Node.js API 在支持 **Buffer** 的地方也接受普通的 **Uint8Array**。
+
+虽然 **Buffer** 类在全局范围内可用，但仍然**建议通过 import 或 require 语句显式地引用它**。
+
+#### 创建缓冲区
+
+```javascript
+const { Buffer } = require("buffer");
+// form 方法创建一个buffer
+const buffer1 = Buffer.from("sixty");
+
+// 创建包含字节 [1, 2, 3] 的缓冲区。
+const buffer2 = Buffer.from([1, 2, 3]);
+
+// 创建长度为 10 的以零填充的缓冲区。
+const buffer3 = Buffer.alloc(10);
+
+console.log(buffer1); // <Buffer 73 69 78 74 79>
+console.log(buffer2); // <Buffer 01 02 03>
+console.log(buffer3); // <Buffer 00 00 00 00 00 00 00 00 00 00>
+```
+
+#### 获取缓冲区值
+
+下面是读取用户命令行输入的例子
+
+```javascript
+var fs = require("fs");
+var buffer = new Buffer(1024);
+
+var readSize = fs.readSync(fs.openSync("/dev/tty", "r"), buffer, 0, bufferSize);
+var chunk = buffer.toString("utf8", 0, readSize);
+
+console.log("INPUT: " + chunk);
+
+// 输入任意内容，然后按回车键
+// foo
+// INPUT: foo
+```
+
+#### protocol-buffers
+
+[protool-buffers](https://github.com/mafintosh/protocol-buffers) 是一个专门为 nodejs 提供的 buffer 库。protool-buffers 可以将结构化的数据文件转化为一个 buffer，并有相关 api 在二进制和结构化数据时间相互转化，类似于 JSON。下面是 protool-buffers 的实例
+
+test.proto
+
+```javascript
+message Column {
+  required int32 id = 1;
+  required string name = 2;
+  required float price = 3;
+}
+```
+
+buffer.js
+
+```javascript
+const fs = require("fs");
+const protobuf = require("protocol-buffers");
+const schema = protobuf(fs.readFileSync(__dirname + "/test.proto", "utf-8"));
+console.log(schema);
+// 输出
+// Messages {
+//   Column: {
+//     type: 2,
+//     message: true,
+//     name: 'Column',
+//     buffer: true,
+//     encode: [Function: encode] { bytes: 0 },
+//     decode: [Function: decode] { bytes: 0 },
+//     encodingLength: [Function: encodingLength],
+//     dependencies: [ [Object], [Object], [Object] ]
+//   }
+// }
+
+const buffer = schema.Column.encode({
+  id: 1,
+  name: "Node.js",
+  price: 80.4,
+});
+console.log(schema.Column.decode(buffer));
+// 输出
+// { id: 1, name: 'Node.js', price: 80.4000015258789 }
+```
+
+nodejs 做 RPC 通信的时候就可以把这个结构化的数据，编码成二进制的数据，然后发给另一个服务器，然后服务器再解出来。
+
+### 搭建多路复用的 RPC 通道
+
+#### 建立简单的通讯
+
+直接看代码
+client.js
+
+```javascript
+const net = require("net");
+const socket = new net.Socket({});
+
+socket.connect({
+  host: "127.0.0.1",
+  port: 4000,
+});
+
+socket.write("hello sixty");
+```
+
+server.js
+
+```javascript
+const net = require("net");
+
+const server = net.createServer((socket) => {
+  socket.on("data", (buffer) => {
+    console.log(buffer, buffer.toString());
+  });
+});
+
+server.listen(4000);
+```
+
+执行 `node server.js`  开启服务器。然后执行 `node client.js`  想服务发消息，在终端能够看到我们发送的字符串，这样简单的客户端和服务端的通讯就完成了。
+
+一个半双工通讯获取数据的例子：
+client.js
+
+```javascript
+const net = require("net");
+
+const socket = new net.Socket({});
+
+socket.connect({
+  host: "127.0.0.1",
+  port: 4000,
+});
+
+const lessonid = ["1", "2", "3", "4", "5", "6", "7", "8"];
+let id = Math.floor(Math.random() * lessonid.length);
+socket.write(encode(id));
+
+socket.on("data", (buffer) => {
+  console.log(buffer.toString());
+
+  // 收到服务器的回复后继续发
+  id = Math.floor(Math.random() * lessonid.length);
+  socket.write(encode(id));
+});
+
+function encode(id) {
+  buffer = Buffer.alloc(4);
+  buffer.writeInt32BE(lessonid[id]);
+  return buffer;
+}
+```
+
+server.js
+
+```javascript
+const net = require("net");
+
+const server = net.createServer((socket) => {
+  socket.on("data", (buffer) => {
+    const lessonid = buffer.readInt32BE();
+    setTimeout(() => {
+      socket.write(Buffer.from(data[lessonid]));
+    }, 500);
+  });
+});
+
+server.listen(4000);
+
+const data = {
+  1: "01 | 课程介绍",
+  2: "02 | 内容综述",
+  3: "03 | nodejs是什么",
+  4: "04 | nodejs可以用来做啥",
+  5: "05 | 课程实战项目介绍",
+  6: "06 | 什么是技术预研",
+  7: "07 | nodejs环境安装",
+  8: "08 | 第一个nodejs程序",
+};
+```
+
+可以看出半双工通信就是客户端服务端只能同时存在一个请求。为什么不能客户端直接不断的发请求？这里面涉及到一个时序问题：服务端接收到客户端快速发不了的并发请求，并不能保证按照时间先后给到客户端返回。
+
+**如何做到全双工通讯？**
+
+1. 我们得为每一个客户端发送的数据包加上 seq 包序号
+2. 避免掉 TCP 的「粘包」机制（TCP 底层优化机制会导致「粘包」，会将很多个并发请求合并为一个，最终只返回一次）
+
+增加 seq 解决问题 1，并将半双工代码改为双工通信
+client.js
+
+```javascript
+const net = require("net");
+
+const socket = new net.Socket({});
+
+socket.connect({
+  host: "127.0.0.1",
+  port: 4000,
+});
+
+const lessonid = ["1", "2", "3", "4", "5", "6", "7", "8"];
+let seq = 0;
+let id = Math.floor(Math.random() * lessonid.length);
+
+socket.on("data", (buffer) => {
+  const seqBuffer = buffer.slice(0, 2);
+  const titleBuffer = buffer.slice(2);
+  console.log(seqBuffer.readInt16BE(), titleBuffer.toString());
+});
+
+function encode(id) {
+  buffer = Buffer.alloc(6);
+  buffer.writeInt16BE(seq++); // 在数据buffer前面两位加上seq
+  buffer.writeInt32BE(lessonid[id], 2);
+  return buffer;
+}
+
+// 每50毫秒就通讯一次
+setInterval(() => {
+  id = Math.floor(Math.random() * lessonid.length);
+  socket.write(encode(id));
+}, 50);
+```
+
+server.js
+
+```javascript
+const net = require("net");
+
+const server = net.createServer((socket) => {
+  socket.on("data", (buffer) => {
+    const seqBuffer = buffer.slice(0, 2);
+    const lessonid = buffer.readInt32BE(2);
+    setTimeout(() => {
+      const buffer = Buffer.concat([seqBuffer, Buffer.from(data[lessonid])]);
+      socket.write(buffer);
+    }, 10 + Math.random() * 1000); // 随机一秒内返回，我们测试在包乱序返回的时候客户端是否还能将请求包和返回包对应上
+  });
+});
+
+server.listen(4000);
+
+const data = {
+  1: "01 | 课程介绍",
+  2: "02 | 内容综述",
+  3: "03 | nodejs是什么",
+  4: "04 | nodejs可以用来做啥",
+  5: "05 | 课程实战项目介绍",
+  6: "06 | 什么是技术预研",
+  7: "07 | nodejs环境安装",
+  8: "08 | 第一个nodejs程序",
+};
+```
+
+这里我们客户端是妹 50 毫秒发一次，如果直接并发发过去的话，我们会发现服务端只接收到一个 buffer。原因是 tcp 底层会自动帮我们拼接并发的包，通常称为「粘包」是一种优化，但是不符合我们实现双工通讯的需求。
+
+关于粘包问题这里没办法详细说，RPC 本身是一门比较高深的内容，社区也有很多成熟的 RPC 框架，这里我们学习 Nodejs 不需要了解的太深入，我们下一篇直接进入实战。
+
+### 总结
+
+关于 Buffer 模块，刚接触 nodejs 的小伙伴可能会觉得很抽象难懂，我就是这样的人，我建议可以阅读 [这篇文章](https://juejin.cn/post/6844903897438371847) 来帮助理解。
