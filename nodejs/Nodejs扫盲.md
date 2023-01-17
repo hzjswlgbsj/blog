@@ -706,7 +706,7 @@ console.log(schema.Column.decode(buffer));
 
 nodejs 做 RPC 通信的时候就可以把这个结构化的数据，编码成二进制的数据，然后发给另一个服务器，然后服务器再解出来。
 
-### 搭建多路复用的 RPC 通道
+### 多路复用的 RPC
 
 #### 建立简单的通讯
 

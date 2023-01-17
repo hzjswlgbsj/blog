@@ -48,7 +48,7 @@ cover 页还是要定制一下
         </div>
       </div>
       <p class="main-layout-self-desc">
-        生活不止眼前的代码，还有弹不响的吉他弦。
+        生活不止眼前的代码，还有诗和远方的田野。
       </p>
       <div class="main-layout-module" v-if="menuList && menuList.length > 0">
         <span class="main-layout-module-name">
@@ -613,7 +613,7 @@ h4 {
           crossChapter: true,
         },
         footer: {
-          copy: "生活不止眼前的苟且，还有弹不响的吉他弦。 —— <a href='https://www.sixtyden.com' target='_blank'>Sixty's blog</a><br/><br/>",
+          copy: "生活不止眼前的苟且，还有诗和远方的田野。 —— <a href='https://www.sixtyden.com' target='_blank'>Sixty's blog</a><br/><br/>",
           pre: "<hr/>",
           style: "text-align: left;",
         },
