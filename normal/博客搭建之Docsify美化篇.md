@@ -613,7 +613,7 @@ h4 {
           crossChapter: true,
         },
         footer: {
-          copy: "生活不止眼前的苟且，还有诗和远方的田野。 —— <a href='https://www.sixtyden.com' target='_blank'>Sixty's blog</a><br/><br/>",
+          copy: "生活不止眼前的代码，还有诗和远方的田野。 —— <a href='https://www.sixtyden.com' target='_blank'>Sixty's blog</a><br/><br/>",
           pre: "<hr/>",
           style: "text-align: left;",
         },
