@@ -882,3 +882,99 @@ const data = {
 ### 总结
 
 关于 Buffer 模块，刚接触 nodejs 的小伙伴可能会觉得很抽象难懂，我就是这样的人，我建议可以阅读 [这篇文章](https://juejin.cn/post/6844903897438371847) 来帮助理解。
+
+## Nodejs 多进程优化
+
+### 1. 进程与线程优化
+
+#### 进程、线程与协程
+
+首先理解一下三者的概念。
+[点击查看【processon】](https://www.processon.com/embed/614867c107912943c05abd7b)
+[点击查看【processon】](https://www.processon.com/embed/614868ba637689589eda04fd)
+
+> J**avaScript 是单线程的，但是可以有多个进程，一个进程或者子进程里面只有一个线程，而 web worker 与 Nodejs 的子线程一样没有改变单线程的本质，子线程完全收到主线程控制，并且能力会收到一些限制，比如子线程不能操作 DOM 等。**
+
+#### Nodejs 的事件循环
+
+- 主线程运行 v8 与 JavaScript
+- 多个子线程通过事件循环被调度
+
+事件循环的过程我们做一个类比：Nodejs 有一个进程，他有个主线程去运行 v8 引擎与 JavaScript。Nodejs 就是一个公司，老板就相当于**主线程**，员工就相当于**子线程**，事件循环就相当于老板在做公司一线事务（跑 JavaScript 和 v8 引擎） ，一旦发现有可以分配给员工做的任务（比如异步任务），老板就会将这些异步任务分配给员工，员工做完后他就报告结果（通过一个事件回调）给老板，老板会不断处理员工做的事情。
+
+[点击查看【processon】](https://www.processon.com/embed/614853421e085315dc4d864f)
+
+当主线程任务过多的时候是处理不完的，但是 JavaScript 只有一个线程，这会导致无法充分利用硬件资源。所以 Nodejs 提供了子线程和子进程的能力，让我们可以利用子进程和子线程在别的 cpu 跑一个 JavaScript 的环境。这样 Nodejs 就好比是个集团了，它里面有很多个子公司，子公司的一个老板就复杂跑一个 JavaScript 的任务，我们就可以充分利用 cpu 资源。
+[点击查看【processon】](https://www.processon.com/embed/6148544a0e3e74524c9403ac)
+
+**master.js**
+
+```typescript
+/**
+ * 主进程
+ */
+
+const cp = require("child_process"); // 引入子进程模块
+const childProcess = cp.fork(__dirname + "/child.js"); // 以child.js为子进程入口，创建一个子进程
+childProcess.send("hello child!"); // 给子进程发消息
+
+// 接受子进程发来的消息
+childProcess.on("message", (message) => {
+  console.log("Message form child", message);
+});
+```
+
+**child.js**
+
+```typescript
+/**
+ * 子进程，process是个全局变量
+ */
+
+// 接收来自主进程的消息
+process.on("message", (message) => {
+  console.log("Message form master", message);
+  process.send("hello master!");
+});
+```
+
+可以看出主进程与子进程之间的通讯类似于 RPC 调用中的服务端与客户端的通讯。进程之间的通讯传递的参数需要 Buffer 序列化或者字符串序列化，这样的话主进程可以分发任务给子进程，子进程进行计算后将结果返回给主进程，最大限度利用 cpu。
+
+如果你需要做一些 CPU 敏感的任务的话，Nodejs 也提供了 **Worker Threads** 来创建一个子线程，而不是 子进程来处理。**Worker Threads **是 v10 版本后才提供的，他对于 I/O 敏感的操作并不会有太大的帮助，因为 Nodejs 现有的非阻塞 I/O 已经比较强大有效了，而且 **child_process** 和 **Cluster** 已经足够利用其他的 CPU 了。
+
+### 2.多核能力的网络程序
+
+上一节了解了如何利用子进程去使用多核 CPU 的能力来执行 CPU 敏感的程序，那我们有没有办法将网络请求任务也分发出去呢？假设我们主进程把多个 http 请求分发给多个子进程，然后子进程处理完后把结果返回给主进程是不是就可以了，答案是肯定的，但是如果我们自己做主进程与子进程这个通讯过程处理的话那岂不是相当的麻烦？所以 Nodejs 提供的 Cluster 模块。
+
+[点击查看【processon】](https://www.processon.com/embed/61485df75653bb35253038d1)
+
+启动与当前机器核心数相同的子进程来处理 http 请求
+
+```typescript
+const cluster = require("cluster");
+const os = require("os");
+
+// 如果是主线程的话分发出当前机器的cpu核心数的子进程
+if (cluster.isMaster) {
+  for (let i = 0; i < os.cpus().length; i++) {
+    cluster.fork();
+  }
+} else {
+  require("./http.js"); // 如果是子进程的话直接处理http请求
+}
+```
+
+但是不要直接 fork 当前机器的核心数数量的子进程，因为 JavaScript 的一些事件循环里面的任务本身会分发给多个 CPU 去处理，如果 CPU 都被占用的话反而会影响执行速度，而且 fork 一个 进程的同时 Nodejs 内存也会被复制，成倍的内存被消耗却得不到成倍的 CPU 性能优化。
+
+### 3. 进程守护与管理
+
+由于 JavaScript 是一门解释型的语言，很多变量引用上的错误，比如你使用某个空的值，你把这个空的值当做对象来使用，并获取它的某个 key，这时候就会出错。但是很遗憾，在代码运行前这是不能被检测到的，你只有运行到这行代码的时候才能发现这个错误。
+
+这种错误在开发的过程中其实是很容易犯的，但是你又不能在统一上线之前检测到被解决，这就导致这种错误很容易被发布到线上去。而且 JavaScript 本身就含有很多的异步代码，异步代码会在「未来」的某个事件循环中，在一个新的调用栈里面回调回来，那如果在这个新的调用栈中运行的代码中包含上面提到的这种错误，而开发者又没有使用 try-catch 来包裹他的代码，那么就不单单是报错了，很可能会引起程序崩溃。
+
+所以，我们就可以使用进程守护能力，在主进程对服务器进程进行监控，这样可以大大提升服务器进程的健康程度，从而提高 Nodejs 程序的稳定性。
+
+### 参考
+
+1. [进程、线程与协程](https://zhuanlan.zhihu.com/p/70256971)
+2. [Nodejs 线程与进程](https://www.nodejs.red/#/nodejs/process-threads?id=interview1)
