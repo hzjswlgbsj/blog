@@ -978,3 +978,220 @@ if (cluster.isMaster) {
 
 1. [进程、线程与协程](https://zhuanlan.zhihu.com/p/70256971)
 2. [Nodejs 线程与进程](https://www.nodejs.red/#/nodejs/process-threads?id=interview1)
+
+## Express 和 Koa
+
+要了解一个框架最好的方法是：
+
+- 了解他的关键功能
+- 推导出他要解决的问题是什么
+
+核心功能
+
+- 路由
+- request/response 简化
+  - request: pathname、query 等
+  - response: send()、json()、jsonp()等
+
+### **Express**
+
+用 express 改造石头剪刀布游戏
+express.js，代替之前的 index.js
+
+```javascript
+const fs = require("fs");
+const game = require("./game");
+const express = require("express");
+
+let playerWinCount = 0; // 玩家胜利次数
+let playerLastAction = null; // 玩家上一次动作
+let sameCount = 0; // 玩家连续出同一个动作的次数
+
+const app = express();
+
+app.get("/favicon.ico", (request, response) => {
+  response.status(200);
+  return;
+});
+
+app.get(
+  "/game",
+  (request, response, next) => {
+    if (playerWinCount >= 3 || sameCount === 9) {
+      response.status(500);
+      response.send("我再也不和你玩了！");
+      return;
+    }
+
+    next();
+
+    if (response.playerWon) {
+      playerWinCount++;
+    }
+  },
+  (request, response, next) => {
+    const query = request.query;
+    const playerAction = query.action;
+
+    if (playerAction && playerAction === playerLastAction) {
+      sameCount++;
+    } else {
+      sameCount = 0;
+    }
+
+    if (sameCount > 3) {
+      response.status(400);
+      response.send("你作弊！我再也不跟你玩了");
+      sameCount = 9;
+      return;
+    }
+
+    playerLastAction = playerAction;
+    response.playerAction = playerAction;
+    next();
+  },
+  (request, response, next) => {
+    const playerAction = response.playerAction;
+    const gameResult = game(playerAction);
+    response.status(200);
+    if (gameResult === 0) {
+      response.send("平局！");
+    } else if (gameResult === 1) {
+      response.send("你赢了！");
+      response.playerWon = true;
+    } else {
+      response.send("你输了！");
+    }
+  }
+);
+
+app.get("/", (request, response) => {
+  response
+    .status(200)
+    .send(fs.readFileSync(__dirname + "/index.html").toString());
+});
+
+app.listen(3000);
+```
+
+**Express** 是个**洋葱模型**，我们可以在 get 或者其他类型的请求中以中间件的形式执行逻辑，如代码中，可以传入无限多个函数，这些函数可以称为中间件，可以抽到外层的 js 文件管理，也可使用第三方的中间件处理逻辑。这些函数中的 response 是同一个，可以实现中间件的数据交互。
+
+但是 **Express** 的洋葱模型 是有问题的，如果某个中间件出现了异步操作，比如加一个像 settimeout 这种事务，那么其他中间件会比他先执行，导致数据交互出问题，而 **Koa** 能解决这个问题，可以说 Koa 就是 **Express** 的升级版。
+
+### Koa
+
+- koa 支持 await 可以等待某个操作执行完成，这就能解决 express 的问题
+- koa 没有了路由的概念，它将这个能力给到了中间件。所以就有了开源的的 koa 路由中间件，就像前端一样。
+
+下面用 Koa 来改造石头剪刀布游戏
+
+```javascript
+const fs = require("fs");
+const game = require("./game");
+const koa = require("koa");
+const mount = require("koa-mount");
+
+let playerWinCount = 0; // 玩家胜利次数
+let playerLastAction = null; // 玩家上一次动作
+let sameCount = 0; // 玩家连续出同一个动作的次数
+const app = new koa();
+const gameKoa = new koa(); // 新的koa实例
+
+// 中间件1
+gameKoa.use(async (ctx, next) => {
+  if (playerWinCount >= 3) {
+    ctx.status = 500;
+    ctx.body = "你开挂，我不会再玩了";
+    return;
+  }
+
+  await next();
+
+  if (ctx.playerWon) {
+    playerWinCount++;
+  }
+});
+
+// 中间件2
+gameKoa.use(async (ctx, next) => {
+  const query = ctx.query;
+  const playerAction = query.action;
+
+  if (!playerAction) {
+    ctx.status = 400;
+    return;
+  }
+
+  if (sameCount === 9) {
+    ctx.status = 500;
+    ctx.body = "我再也不和你玩了！";
+  }
+
+  if (playerAction === playerLastAction) {
+    sameCount++;
+    if (sameCount >= 3) {
+      ctx.status = 400;
+      ctx.body = "你作弊！我再也不跟你玩了";
+      sameCount = 9;
+      return;
+    }
+  } else {
+    sameCount = 0;
+  }
+
+  playerLastAction = playerAction;
+  ctx.playerAction = playerAction;
+  await next();
+});
+
+// 中间件3
+gameKoa.use(async (ctx) => {
+  const playerAction = ctx.playerAction;
+  const gameResult = game(playerAction);
+  await new Promise((resolve) => {
+    setTimeout(() => {
+      ctx.status = 200;
+      if (gameResult === 0) {
+        ctx.body = "平局！";
+      } else if (gameResult === 1) {
+        ctx.body = "你赢了！";
+        ctx.playerWon = true;
+      } else {
+        ctx.body = "你输了！";
+      }
+
+      resolve();
+    }, 500);
+  });
+});
+// 游戏路由
+app.use(mount("/game", gameKoa));
+
+app.use(
+  mount("/favicon.ico", (ctx) => {
+    ctx.status = 200;
+  })
+);
+
+// 根路由
+app.use(
+  mount("/", (ctx) => {
+    ctx.body = fs.readFileSync(__dirname + "/index.html", "utf-8");
+  })
+);
+app.listen(3000);
+```
+
+Koa 核心功能
+
+- 比 Express 更极致的 request/response 简化
+  - ctx.status = 200
+  - ctx.body = 'hello world'
+- 使用 async function 实现的中间件
+  - 有「暂停执行」的能力
+  - 在一部的情况下也符合洋葱模型
+
+### Express vs Koa
+
+- Express 门槛更低，Koa 更强大优雅
+- Express 封装更多东西，开发更快速，Koa 可定制化成都更高
