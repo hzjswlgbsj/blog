@@ -86,6 +86,7 @@ newPrint(); // // nickname is sixty, age is 18, born in 1993
 1. call 改变了 this 的指向
 2. call 帮助调用了函数
 3. 可以注入参数
+4. 正确的返回值
 
 先想想第一点，如何改变函数调用时的上下文呢，可不可以反过来，我们将函数以属性的方式直接加到目标对象上，那此时函数作为目标对象的属性被调用的时候 this 不就是指向的目标对象吗
 
@@ -124,4 +125,107 @@ function print() {
 print.myCall(person); // nickname is sixty, age is 18
 ```
 
-可以，没问题！继续实现第二步
+可以，没问题！第一步和第二步都完成了，继续实现第三步，其实就是在 `myCall` 接受不定数量的参数。这很简单，有 `Arguments` 帮助我们，可以将 argument 类数组中的参数提取出来放到一个数组中，方便后面传入到被调用函数的参数中去。
+
+```javascript
+// 因为arguments是类数组对象，所以可以用for循环
+var args = [];
+for (var i = 1, len = arguments.length; i < len; i++) {
+  args.push("arguments[" + i + "]");
+}
+
+// 执行后 args为 ["arguments[1]", "arguments[2]", ...]
+```
+
+将拿到的参数放到被调用函数的参数中
+
+```javascript
+context.fn(args.join(","));
+```
+
+看起来没毛病是吧，我开始也觉得没问题，仔细看看 args 里面保存的是 `"arguments[1]"` 这种字符串，通过 ES6 倒是不用再存一遍 arguments 了，直接解构就行
+
+```javascript
+Function.prototype.myCall = function (context) {
+  context.fn = this;
+  context.fn(...Array.from(arguments).slice(1));
+  delete context.fn;
+};
+// 或者再简单点，在 myCall 直接解构
+Function.prototype.myCall = function (context, ...args) {
+  context.fn = this;
+  let result = context.fn(...args);
+  delete context.fn;
+};
+```
+
+但是 `call` 方法本来就是 ES3 的方法，用 ES6 的语法是模拟就感觉很奇怪，要在 ES3 中将字符串 `"arguments[1]"` 作为代码解析那可以使用 `eval` 。
+
+```javascript
+Function.prototype.myCall = function (context) {
+  context.fn = this;
+  var args = [];
+  for (var i = 1, len = arguments.length; i < len; i++) {
+    args.push("arguments[" + i + "]");
+  }
+  eval("context.fn(" + args + ")");
+  delete context.fn;
+};
+```
+
+注意这里用 `+` 连接可以直接将数组转成字符串
+
+```javascript
+console.log("" + [1, 2, 3] + ""); // 1,2,3
+eval("context.fn(" + args + ")"); // eval执行后 context.fn(arguments[1], arguments[2])
+```
+
+最后一步处理被调用函数的返回值
+
+```javascript
+Function.prototype.myCall = function (context) {
+  var context = context || window; // 1.this 参数可以传 null，当为 null 的时候，视为指向 window
+  context.fn = this;
+
+  var args = [];
+  for (var i = 1, len = arguments.length; i < len; i++) {
+    args.push("arguments[" + i + "]");
+  }
+
+  var result = eval("context.fn(" + args + ")");
+
+  delete context.fn;
+  return result;
+};
+```
+
+这样一个简单版本的 `call` 方法就模拟出来了，其实还有很多问题没考虑和解决，比如出入的 `context` ，本来就有 `fn` 属性那就炸了，可以想办法搞个特殊字符串，或者用 ES6 的 `Symbol` , 而且 `context` 还有可能被传入基本数据类型比如字符串，这都得处理，但是模拟实现本来就是学习语言设计，正式环境肯定不会使用自己实现的。
+
+### 模拟 apply
+
+apply 的实现跟 call 类似，在这里直接给代码
+
+```javascript
+Function.prototype.myApply = function (context, arr) {
+  var context = Object(context) || window;
+  context.fn = this;
+
+  var result;
+  if (!arr) {
+    result = context.fn();
+  } else {
+    var args = [];
+    for (var i = 0, len = arr.length; i < len; i++) {
+      args.push("arr[" + i + "]");
+    }
+    result = eval("context.fn(" + args + ")");
+  }
+
+  delete context.fn;
+  return result;
+};
+```
+
+## 参考
+
+[不能使用 call,apply,bind，如何用 js 实现 call 或者 apply 的功能？](https://www.zhihu.com/question/35787390)

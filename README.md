@@ -33,7 +33,7 @@
 - [继承的多种方式及其优缺点](javascript-base-learn/继承的多种方式及其优缺点.md)
 - [事件循环机制](javascript-base-learn/事件循环机制.md)
 - [call、apply 和 bind](javascript-base-learn/call、apply和bind.md)
-- [new 执行时发生了什么](javascript-base-learn/new执行时发生了什么.md)
+- [new 模拟实现](javascript-base-learn/new模拟实现.md)
 
 ## 🍃 数据结构与算法
 
