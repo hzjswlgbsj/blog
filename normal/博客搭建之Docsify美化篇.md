@@ -371,24 +371,23 @@ pre {
   height: 30px;
   background-size: 40px;
   background-repeat: no-repeat;
-  background-color: #1c1c1c;
+  background-color: #282c34;
   background-position: 10px 10px;
 }
 
 /*代码块头部图标 end*/
-
 .markdown-section pre > code {
   color: #c0c3c1 !important;
-  font-family: "Inconsolata", consolas, "PingFang SC", "Microsoft YaHei",
-    monospace !important;
-  background-color: #212121 !important; //#accfff  #282c34
+  /* font-family: "Inconsolata", consolas, "PingFang SC", "Microsoft YaHei",
+    monospace !important; */
+  background-color: #282c34 !important; //#accfff  #282c34
   font-size: 15px !important;
   white-space: pre !important;
   line-height: 1.5 !important;
   -moz-tab-size: 4 !important;
   -o-tab-size: 4 !important;
   tab-size: 4 !important;
-  /*border-radius: .3em;*/
+  padding: 0 0 24px 0 !important;
 }
 
 ol,
@@ -401,7 +400,6 @@ li {
 @media (min-width: 600px) {
   .markdown-section pre > code {
     font-size: 15px !important;
-    letter-spacing: 1.1px !important;
   }
 }
 
