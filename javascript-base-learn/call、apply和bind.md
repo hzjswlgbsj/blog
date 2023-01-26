@@ -228,4 +228,6 @@ Function.prototype.myApply = function (context, arr) {
 
 ## 参考
 
-[不能使用 call,apply,bind，如何用 js 实现 call 或者 apply 的功能？](https://www.zhihu.com/question/35787390)
+1. [不能使用 call,apply,bind，如何用 js 实现 call 或者 apply 的功能？](https://www.zhihu.com/question/35787390)
+2. [Understanding This, Bind, Call, and Apply in JavaScript](https://www.taniarascia.com/this-bind-call-apply-javascript/)
+3. [JS 中的 call、apply、bind 方法详解](https://segmentfault.com/a/1190000018270750)
