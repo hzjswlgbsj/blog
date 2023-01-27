@@ -226,6 +226,27 @@ Function.prototype.myApply = function (context, arr) {
 };
 ```
 
+### 模拟 bind
+
+`bind()` 方法创建一个新的函数，在 `bind()` 被调用时，这个新函数的 `this` 被指定为 `bind()` 的第一个参数，而其余参数将作为新函数的参数，供调用时使用。
+
+首先明确 bind 做了什么
+
+1. 改变了 this 上下文
+2. 传递参数
+3. 返回一个函数
+
+实现第一步很简单，可以使用上面模拟过的 apply 或者 call 来改变 this 指向
+
+```javascript
+Function.prototype.myBind = function(context）{
+  var self = context // 保存this，即调用bind方法的目标函数
+  return function() {
+    return self.apply(context)
+  }
+}
+```
+
 ## 参考
 
 1. [不能使用 call,apply,bind，如何用 js 实现 call 或者 apply 的功能？](https://www.zhihu.com/question/35787390)
