@@ -1,3 +1,5 @@
+# 恶补 JavaScript 基础之 call、apply 和 bind
+
 ## 简介
 
 之前总结了 `this` 关键字，这是 JavaScript 中比较重要的概念，`this` 本质上是对象的一个引用方便操作对象上的属性，但有些时候 `this` 的引用会丢失，或者说不会是我们预期的值。在 JavaScript 中有几个方法可以让程序员自己来改变 `this` 的指向，它们是 `call` 、`apply` 和 `bind`。
