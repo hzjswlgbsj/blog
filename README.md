@@ -34,7 +34,6 @@
 - [事件循环机制](javascript-base-learn/事件循环机制.md)
 - [call、apply 和 bind](javascript-base-learn/call、apply和bind.md)
 - [new 模拟实现](javascript-base-learn/new模拟实现.md)
-- [浏览器是如何渲染页面的](javascript-base-learn/浏览器是如何渲染页面的.md)
 
 ## 🍃 数据结构与算法
 
@@ -61,4 +60,4 @@
 
 ## 🌴 深入 Vue3
 
-搬运中...
+- [响应式系统设计](vue/响应式系统设计.md)
