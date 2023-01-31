@@ -879,12 +879,13 @@ const data = {
 
 首先理解一下三者的概念。
 
-<iframe  
+<iframe
   src="https://www.processon.com/embed/614867c107912943c05abd7b"  
   frameborder=0  
   allowfullscreen
 />
-<iframe  
+
+<iframe
   src="https://www.processon.com/embed/614868ba637689589eda04fd"  
   frameborder=0  
   allowfullscreen
@@ -899,7 +900,7 @@ const data = {
 
 事件循环的过程我们做一个类比：Nodejs 有一个进程，他有个主线程去运行 v8 引擎与 JavaScript。Nodejs 就是一个公司，老板就相当于**主线程**，员工就相当于**子线程**，事件循环就相当于老板在做公司一线事务（跑 JavaScript 和 v8 引擎） ，一旦发现有可以分配给员工做的任务（比如异步任务），老板就会将这些异步任务分配给员工，员工做完后他就报告结果（通过一个事件回调）给老板，老板会不断处理员工做的事情。
 
-<iframe  
+<iframe
   src="https://www.processon.com/embed/614853421e085315dc4d864f"  
   frameborder=0  
   allowfullscreen
@@ -907,7 +908,7 @@ const data = {
 
 当主线程任务过多的时候是处理不完的，但是 JavaScript 只有一个线程，这会导致无法充分利用硬件资源。所以 Nodejs 提供了子线程和子进程的能力，让我们可以利用子进程和子线程在别的 cpu 跑一个 JavaScript 的环境。这样 Nodejs 就好比是个集团了，它里面有很多个子公司，子公司的一个老板就复杂跑一个 JavaScript 的任务，我们就可以充分利用 cpu 资源。
 
-<iframe  
+<iframe
   src="https://www.processon.com/embed/6148544a0e3e74524c9403ac"  
   frameborder=0  
   allowfullscreen
