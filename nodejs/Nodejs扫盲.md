@@ -885,7 +885,8 @@ const data = {
   src="https://www.processon.com/embed/614867c107912943c05abd7b"  
   frameborder=0  
   allowfullscreen
-/>
+>
+</iframe>
 
 进程、线程、协程脑图
 
@@ -895,8 +896,8 @@ const data = {
   src="https://www.processon.com/embed/614868ba637689589eda04fd"  
   frameborder=0  
   allowfullscreen
-/>
-
+>
+</iframe>
 > J**avaScript 是单线程的，但是可以有多个进程，一个进程或者子进程里面只有一个线程，而 web worker 与 Nodejs 的子线程一样没有改变单线程的本质，子线程完全收到主线程控制，并且能力会收到一些限制，比如子线程不能操作 DOM 等。**
 
 #### Nodejs 的事件循环
@@ -912,7 +913,8 @@ const data = {
   src="https://www.processon.com/embed/614853421e085315dc4d864f"  
   frameborder=0  
   allowfullscreen
-/>
+>
+</iframe>
 
 当主线程任务过多的时候是处理不完的，但是 JavaScript 只有一个线程，这会导致无法充分利用硬件资源。所以 Nodejs 提供了子线程和子进程的能力，让我们可以利用子进程和子线程在别的 cpu 跑一个 JavaScript 的环境。这样 Nodejs 就好比是个集团了，它里面有很多个子公司，子公司的一个老板就复杂跑一个 JavaScript 的任务，我们就可以充分利用 cpu 资源。
 
@@ -922,7 +924,8 @@ const data = {
   src="https://www.processon.com/embed/6148544a0e3e74524c9403ac"  
   frameborder=0  
   allowfullscreen
-/>
+>
+</iframe>
 
 **master.js**
 
@@ -969,7 +972,8 @@ process.on("message", (message) => {
   src="https://www.processon.com/embed/61485df75653bb35253038d1"  
   frameborder=0  
   allowfullscreen
-/>
+>
+</iframe>
 
 启动与当前机器核心数相同的子进程来处理 http 请求
 
