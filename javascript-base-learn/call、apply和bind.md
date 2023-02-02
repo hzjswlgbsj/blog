@@ -234,6 +234,7 @@ Function.prototype.myApply = function (context, arr) {
 
 首先明确 bind 做了什么，当然不会把规范的步骤全部模拟出来
 ![image.png](https://cdn.nlark.com/yuque/0/2023/png/160765/1674872070034-94973498-ea3e-42c3-93ac-135c693262cf.png#averageHue=%23f7f7f7&clientId=uc7e3a9f8-8603-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=279&id=ub7edca34&margin=%5Bobject%20Object%5D&name=image.png&originHeight=558&originWidth=583&originalType=binary&ratio=1&rotation=0&showTitle=false&size=130804&status=done&style=none&taskId=ub4839c07-2dd2-40a4-b5ac-91b8e8b7550&title=&width=291.5)
+
 学习主要模拟大致过程：
 
 1. 改变了 this 上下文
@@ -434,6 +435,6 @@ Function.prototype.myBind = function (context) {
 
 ### 参考
 
-1. [不能使用 call,apply,bind，如何用 js 实现 call 或者 apply 的功能？]([https://www.zhihu.com/question/35787390)](https://www.zhihu.com/question/35787390))
-2. [Understanding This, Bind, Call, and Apply in JavaScript]([https://www.taniarascia.com/this-bind-call-apply-javascript/)](https://www.taniarascia.com/this-bind-call-apply-javascript/))
-3. [JS 中的 call、apply、bind 方法详解]([https://segmentfault.com/a/1190000018270750)](https://segmentfault.com/a/1190000018270750))
+1. [不能使用 call,apply,bind，如何用 js 实现 call 或者 apply 的功能？](https://www.zhihu.com/question/35787390)
+2. [Understanding This, Bind, Call, and Apply in JavaScript](https://www.taniarascia.com/this-bind-call-apply-javascript/)
+3. [JS 中的 call、apply、bind 方法详解](https://segmentfault.com/a/1190000018270750))
