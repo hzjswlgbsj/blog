@@ -435,7 +435,7 @@ var a = new A();
 console.log(a.x); // 10
 ```
 
-在这个例子中，new 操作符调用 `A` 函数内部的 [[[Construct\]]](http://bclary.com/2004/11/07/#a-13.2.2)方法，接着，在对象创建后，调用其内部的 [[[Call\]]](http://bclary.com/2004/11/07/#a-13.2.1)方法，所有相同的函数 `A`都将 this 的值设置为新创建的对象。
+在这个例子中，new 操作符调用 `A` 函数内部的 [\[\[Construct\]\]](http://bclary.com/2004/11/07/#a-13.2.2) 方法，接着，在对象创建后，调用其内部的 [\[\[Call\]\]](http://bclary.com/2004/11/07/#a-13.2.1)方法，所有相同的函数 `A`都将 this 的值设置为新创建的对象。
 
 ## 手动设置一个函数调用的 this
 
@@ -463,6 +463,6 @@ this 关键字对于大多数新人来说都是理解的云里雾里，我也一
 2. [JavaScript 的 this 原理](http://www.ruanyifeng.com/blog/2018/06/javascript-this.html)
 3. [ECMA-262-3 in detail. Chapter 3. This.](http://dmitrysoshnikov.com/ecmascript/chapter-3-this/)
 4. [关于内部引用类型的简单解释](https://www.zhihu.com/question/31911373)
-5. [[深入理解“连等赋值”问题](https://segmentfault.com/a/1190000004224719)]
+5. [深入理解“连等赋值”问题](https://segmentfault.com/a/1190000004224719)
 
 （完）
