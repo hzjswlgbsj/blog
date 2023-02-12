@@ -54,10 +54,10 @@
 - [Quill 中文文档 <small style='color: blue'>富文本编辑器</small>](quill-translate/README)
 - [比 CRDTs 快 5000 倍：一次冒险的优化[译] <small style='color: orange'>在线文档</small> <small style='color: red'>CRDT</small>](document-online/比CRDTs快5000倍：一次冒险的优化[译])
 
-## 🍂 设计模式
-
-搬运中...
-
 ## 🌴 深入 Vue3
 
 - [响应式系统设计](vue/响应式系统设计.md)
+
+## 🍂 设计模式
+
+输出中...
