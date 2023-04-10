@@ -39,12 +39,12 @@
 
 ## 🌵 JavaScript 专题知识
 
-- [理解 JavaScript 对象](javascript-special/数组去重.md)
-- [执行上下文](javascript-special/类型判断.md)
-- [变量对象](javascript-special/节流与防抖.md)
-- [作用域链](javascript-special/深浅拷贝.md)
-- [this 关键字](javascript-special/数组扁平化.md)
-- [理解闭包](javascript-special/promise.md)
+- [数组去重](javascript-special/数组去重.md)
+- [类型和类型判断](javascript-special/类型和类型判断.md)
+- [节流与防抖](javascript-special/节流与防抖.md)
+- [深浅拷贝](javascript-special/深浅拷贝.md)
+- [数组扁平化](javascript-special/数组扁平化.md)
+- [promise](javascript-special/promise.md)
 
 ## 🍃 数据结构与算法
 
