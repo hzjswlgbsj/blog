@@ -1237,4 +1237,4 @@ Koa 核心功能
 ### Express vs Koa
 
 - Express 门槛更低，Koa 更强大优雅
-- Express 封装更多东西，开发更快速，Koa 可定制化成都更高
+- Express 封装更多东西，开发更快速，Koa 可定制化程度更高
