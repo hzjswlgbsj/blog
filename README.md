@@ -21,6 +21,7 @@
 - [Quill 编辑器架构](document-online/Quill编辑器架构.md)
 - [如何设计在线协同文档](document-online/如何设计在线协同文档.md)
 - [比 CRDTs 快 5000 倍：一次冒险的优化[译]](document-online/比CRDTs快5000倍：一次冒险的优化[译])
+- [Yjs 在线文档方案性能问题探索](document-online/Yjs在线文档方案性能问题探索)
 
 ## 🌾 JavaScript 恶补基础
 
