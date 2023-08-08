@@ -20,6 +20,8 @@ ssh-keygen -t rsa
 scp id_rsa.pub root@B:/tmp  //scp -r是拷贝文件夹
 # 举个例子：将服务器的/www/sixty-api/ 复制到本地的~/www（在本地执行）
 scp -r root@101.200.52.143:/www/sixty-api/ ~/www
+# 如果配置了免密登录服务器的命令可以使用免密方式，将服务器的/www/sixty-api/ 复制到本地的~/www（在本地执行）
+scp -r txcore2:/www/sixty-api/ ~/www
 ```
 
 **第三步：将刚才拷贝的公钥拷贝到 B 的 authorized_keys 文件（没有就创建，注意权限不能是 777，可以设置成 700 或者 400）**<br />**切换到 B 的.ssh**
