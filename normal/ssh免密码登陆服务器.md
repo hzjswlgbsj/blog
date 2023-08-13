@@ -17,7 +17,8 @@ ssh-keygen -t rsa
 一路回车后，在~/.ssh 下会生成 id_rsa，和 id_rsa.pub，其中 id_rsa 是密钥，id_rsa.pub 是公钥。<br />**第二步：把在 A 机生成的 id_rsa.pub 拷贝到 B 机上。**<br />怎么跨主机复制文件呢，下面的命令可以做到：(假设放在 B 的 tmp)
 
 ```bash
-scp id_rsa.pub root@B:/tmp  //scp -r是拷贝文件夹
+# scp -r是拷贝文件夹
+scp id_rsa.pub root@B:/tmp
 # 举个例子：将服务器的/www/sixty-api/ 复制到本地的~/www（在本地执行）
 scp -r root@101.200.52.143:/www/sixty-api/ ~/www
 # 如果配置了免密登录服务器的命令可以使用免密方式，将服务器的/www/sixty-api/ 复制到本地的~/www（在本地执行）
