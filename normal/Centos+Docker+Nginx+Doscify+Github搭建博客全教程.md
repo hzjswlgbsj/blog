@@ -361,7 +361,9 @@ cat /root/.ssh/id_rsa.pub
 ### 配置 Webhook
 
 在 GitHub 中找到你的博客项目，然后点击 `Settings`，在右侧找到 `Webhook`，添加你的 webhook，如图所示：
+
 ![image.png](https://lib.sixtyden.com/webhook.png)
+
 Payload URL 填写 `http://your_ip:8888`，我使用了 `8888` 端口，Content type 选择 application/json，这个 Secret 一定要填写，为了安全起见，也请你阅读一下文档，GitHub 会根据这个字符串加密，然后在返回头信息里面返回一个 `x-hub-signature`（现在建议使用 x-hub-signature-256 了）。在后面的代码里面我们要验证这个。
 
 此时 GitHub 会提示你填写的这个回调地址是错误的，不用管他，毕竟代码还没写， node 服务也还没起来。
@@ -466,11 +468,15 @@ cd /www/blog/webhook && pm2 start app.js
 ```
 
 看到如下图代表成了
+
 ![image.png](https://lib.sixtyden.com/pm2_view.png)
+
 此时你可以在浏览器中访问 `http://your_ip:8888/` 端口你可以自己去代码里面修改，如果看到 `index.html`中的恭喜页就代表一切就绪
 
 现在，你去博客的仓库中再次去查看 Webhook，在 Recent Deliveries 中已经可以看到回调了，如果没有成功你需要检查一下你的 node 服务。
+
 ![image.png](https://lib.sixtyden.com/webhook_rencent.png)
+
 现在去修改仓库的代码，然后 push ，你就能发现服务器上面的 `/www/blog/blog` 文件夹里面的文件自动更新了。
 
 至此，整个搭建过程就全部完成了，之后我会继续出一篇如何美化和组织 Docsify 博客。
