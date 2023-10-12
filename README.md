@@ -75,3 +75,5 @@
 
 - [单元测试简介](unit-test/单元测试简介.md)
 - [Vitest 的 常用 API](unit-test/Vitest的API.md)
+- [创建测试数据的主要方式](unit-test/创建测试数据的主要方式.md)
+- [程序的间接输入](unit-test/程序的间接输入.md)
