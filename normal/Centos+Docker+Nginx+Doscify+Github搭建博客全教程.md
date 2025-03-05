@@ -405,7 +405,7 @@ server.start();
 #### server.js
 
 ```javascript
-const secret = "46a5dc72550e02ce2743bb7061e4b33bc195c541";
+const secret = "your-webhook secret";
 const repo = "/www/blog/blog";
 
 const http = require("http");
