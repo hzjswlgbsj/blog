@@ -234,7 +234,7 @@ server {
   server_name www.sixtyden.com;
   # 开启 ssl
   ssl on;
-	# 证书地址，这里要注意应该写容器上的地址而不是本机！！！
+ # 证书地址，这里要注意应该写容器上的地址而不是本机！！！
   ssl_certificate   /etc/nginx/WwwSixtydenCom.pem;
   # 证书密钥地址，这里要注意应该写容器上的地址而不是本机！！！
   ssl_certificate_key  /etc/nginx/WwwSixtydenCom.key;
@@ -383,12 +383,12 @@ OK，准备工作就做好了，接下来开始写拉代码的 node 小代码。
 - blog          // github 上的blog仓库保存地址
   - ...         // 文章
 - conf          // Nginx 配置文件夹
-	- nginx.conf  // docker 中的 Nginx 配置文件
+ - nginx.conf  // docker 中的 Nginx 配置文件
   - ...
 - webhook       // webhook 相关代码
   - app.js      // 入口
-	- server.js   // webhook 捕获后的处理代码
-	- index.html  // webhook 的node服务自动成功提示页（可删除）
+ - server.js   // webhook 捕获后的处理代码
+ - index.html  // webhook 的node服务自动成功提示页（可删除）
 - Dockerfile
 - index.html    // 目前Docsify默认生成的首页
 - README.md     // readme
