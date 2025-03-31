@@ -51,7 +51,7 @@
 
 ## 🍃 数据结构与算法
 
- 算法这块内容可看看我的 [算法仓库](https://github.com/hzjswlgbsj/algorithm-study)，里面主要是 Letcode 的一些解题思路。
+ 算法这块内容我有做一些 [笔记](https://github.com/hzjswlgbsj/algorithm-study)，里面主要是 Letcode 的一些解题思路，这里只放一些数据结构基础知识。
 
 - [位运算](algorithm/BitManipulation.md)
 - [链表](algorithm/LinkedList.md)

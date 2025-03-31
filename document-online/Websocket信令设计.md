@@ -39,7 +39,7 @@ WebSocket 是一种在客户端与服务器之间建立 **全双工通信** 的�
 
 **示例：WebRTC 会议中用户开启麦克风**
 
-```json
+```javascript
 {
  "type": "control",
  "action": "enable_media",
@@ -66,7 +66,7 @@ WebSocket 是一种在客户端与服务器之间建立 **全双工通信** 的�
 
 **示例：WebRTC 会议中用户开启麦克风**
 
-```json
+```javascript
 [3, 1, "user1", 1]
 ```
 
