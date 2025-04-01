@@ -114,48 +114,6 @@ message Signal {
 - ❌ **调试不便**，二进制数据不易直接查看。
 - ❌ **前端需要额外库**，如 `protobuf.js`。
 
-## 3. WebSocket 信令日志方案
-
-由于 WebSocket 信令传输 **高频、实时性强**，故日志方案至关重要。
-
-### 3.1 日志记录方案
-
-**设计 Logger 类：**
-
-```typescript
-class WebSocketLogger {
- private logs: any[] = [];
- private maxLogSize = 100;
- 
- log(message: any) {
-  const logEntry = {
-   timestamp: new Date().toISOString(),
-   message,
-  };
-  
-  console.log("WebSocket Log:", logEntry);
-  this.logs.push(logEntry);
-  if (this.logs.length > this.maxLogSize) {
-   this.uploadLogs();
-   this.logs = [];
-  }
- }
-
- private uploadLogs() {
-  // 上传日志到 OSS
-  fetch("/api/logs/upload", {
-   method: "POST",
-   body: JSON.stringify(this.logs),
-  });
- }
-}
-```
-
-**日志存储策略：**
-
-- **浏览器本地缓存（LocalStorage / IndexedDB）**，防止数据丢失。
-- **服务器端存储（上传至 OSS / 日志服务）**，支持长期分析。
-
 ## 4. 如何决策，如何优化？
 
 1. **优先考虑 JSON（适合大多数业务场景）**
