@@ -1,53 +1,355 @@
+# 树
+
 ## 基本概念
-计算机的数据结构是对现实世界物体间关系的一种抽象。比如家族的族谱，公司架构中的人员组织关系，电脑中的文件夹结构，HTML 渲染的 DOM 结构等等，这些有层次关系的结构在计算机领域都叫做树。
 
-比较规范的来说，树是一种非线性数据结构。树结构的基本单位是节点。节点之间的链接，称为分支（branch）。节点与分支形成树状，结构的开端，称为根（root），或根结点。根节点之外的节点，称为子节点（child）。没有链接到其他子节点的节点，称为叶节点（leaf）。如下图是一个典型的树结构：
+树是前端开发中非常重要的数据结构，无论是DOM树、组件树还是算法中的应用，都离不开树的理解。本文将系统介绍树的基本概念、分类和遍历方法。
 
-![tree](https://lib.sixtyden.com/tree.jpg)
+## 基本概念
 
-树的节点数据结构一般为：
+### 什么是树？
+
+树是一种**非线性数据结构**，它完美模拟了现实世界中许多层次关系比如：
+
+- 文件系统的目录结构
+- HTML DOM树
+- 公司组织架构
+- React/Vue的组件树
+- 家族族谱
+
+### 树的组成
+
+树由若干个**节点(Node)**和连接它们的**边(Edge)**组成。每个树都有以下关键部分：
+
+1. **根节点(Root)**: 树的顶端节点，没有父节点
+2. **子节点(Child)**: 被其他节点指向的节点
+3. **父节点(Parent)**: 指向子节点的节点
+4. **叶节点(Leaf)**: 没有子节点的节点
+5. **子树(Subtree)**: 某个节点及其所有后代组成的树
+
+![树结构示意图](https://lib.sixtyden.com/tree.jpg)
+
+### 树的代码表示
+
+最基本的树节点可以用如下TypeScript接口表示：
+
 ```typescript
-interface Node {
-	value: any; // 当前节点的值
-	children: Array<Node>; // 指向子
+interface TreeNode {
+  value: any;         // 节点存储的值
+  children: TreeNode[]; // 子节点数组
 }
 ```
 
-其他重要概念：
+### 重要术语
 
-- 树的高度：节点到叶子节点的最大值就是其高度。
-- 树的深度：高度和深度是相反的，高度是从下往上数，深度是从上往下。因此根节点的深度和叶子节点的高度是 0。
-- 树的层：根开始定义，根为第一层，根的孩子为第二层。
+- **高度(Height)**：节点到最远叶节点的最长路径边数
+- **深度(Depth)**：根节点到该节点的边数
+- **层级(Level):**：深度 + 1（根节点为第1层）
 
-### 二叉树
-二叉树是树结构的一种，「二叉」就是说每个节点**最多**只有两个子节点，我们习惯称之为左节点和右节点，它的节点数据结构一般为：
+---
+
+## 二叉树
+
+**二叉树**是每个节点最多有两个子节点的树结构，分别称为：
+
+- 左子节点(left child)
+- 右子节点(right child)
+
 ```typescript
-interface Node {
-	value: any; // 当前节点的值
-	left: Node; // 指向左节点
-	right: Node; // 指向右节点
+interface BinaryTreeNode {
+  value: any;
+  left: BinaryTreeNode | null;
+  right: BinaryTreeNode | null;
 }
 ```
 
-#### 二叉树分类
-- 完全二叉树
-- 满二叉树
-- 二叉搜索树
-- 平衡二叉树
-- 红黑树
-。。。
+### 二叉树分类
 
-#### 二叉树的表示
-- 链表存储
-- 数组存储。非常适合完全二叉树
+| 类型            | 特点                             | 示例            |
+|----------------|---------------------------------|-----------------|
+| 满二叉树        | 每个节点都有 0 或 2 个子节点        | 满二叉树          |
+| 完全二叉树      | 除最后一层外完全填充，最后一层向左对齐 | 完全二叉树        |
+| 二叉搜索树(BST) | 左子节点 ≤ 根节点 ≤ 右子节点        |  BST            |
+| 平衡二叉树      | 任意节点的左右子树高度差 ≤ 1        |  AVL 树          |
+| 红黑树         | 自平衡的二叉搜索树                  | Map/Set 底层实现 |
 
+### 储存方式
+
+**链式存储（常用）：**
+
+```javascript
+{ value: 1, left: {...}, right: {...} }
+```
+
+**数组存储（适合完全二叉树）：**
+
+- 索引i的左子节点：2*i + 1
+- 索引i的右子节点：2*i + 2
+- 索引i的父节点：Math.floor((i-1)/2)
+
+---
 
 ## 树的遍历
-所有跟树有关的题目只有一个中心点，那就是**树的遍历**，不会树的遍历一切都是百搭。
 
-但是如何遍历呢？首先毫无疑问的是必须得从根节点开始访问，然后根据子节点指针访问子节点，但是子节点有多个（二叉树最多两个）方向，所以又有了先访问哪个的问题，这造成了不同的遍历方式。
+树的遍历方式可以分为**深度优先遍历（DFS）**和**广度优先遍历（BFS）**。
 
-遍历是为了什么呢？一般是查找搜索、修改节点内容，移动、删除以及交换节点等等。树虽然只能从根开始访问，但是我们可以选择在访问完毕回来的时候做处理，还是在访问回来之前做处理，这两种不同的方式就是**后序遍历**和**先序遍历**。
+遍历的目的包括：
 
+- 查找、搜索特定节点。
+- 修改或删除某个节点。
+- 计算树的高度、深度等属性。
 
-而树的遍历又可以分为两个基本类型，分别是深度优先遍历（Depth-First-Search，DFS）和广度优先遍历（Breadth-First Search，BFS）。像二叉树的前中后序遍历的递归实现都属于深度优先遍历，用栈迭代的方式就属于广度优先遍历。
+### 深度优先遍历（DFS）
+
+**深度优先遍历**（Depth-First Search，DFS）按照纵向方向深入到树的叶子节点，然后回溯。可以用递归或栈来实现。
+
+#### 二叉树的深度优先遍历
+
+**前序遍历（Preorder）**：
+先访问根节点 → 左子树 → 右子树
+
+```javascript
+function preorder(root) {
+  if (!root) return;
+  console.log(root.value); // 先访问根
+  preorder(root.left);    // 再左子树
+  preorder(root.right);   // 最后右子树
+}
+```
+
+**中序遍历（Inorder）**：
+先访问左子树 → 根节点 → 右子树
+
+```javascript
+function inorder(root) {
+  if (!root) return;
+  inorder(root.left);    // 先左子树
+  console.log(root.value); // 再访问根
+  inorder(root.right);   // 最后右子树  
+}
+```
+
+**后序遍历（Postorder）**：
+先访问左子树 → 右子树 → 根节点
+
+```javascript
+function postorder(root) {
+  if (!root) return;
+  postorder(root.left);    // 先左子树
+  postorder(root.right);   // 再右子树
+  console.log(root.value); // 最后访问根 
+}
+```
+
+**迭代实现 DFS（使用栈）**：
+这里演示前序遍历的迭代实现，使用栈来实现。
+
+```javascript
+function preorderTraversalIterative(root: Node | null): void {
+  if (!root) return;
+  const stack: Node[] = [root];
+  while (stack.length > 0) {
+    const node = stack.pop()!;
+    console.log(node.value);
+    if (node.right) stack.push(node.right);
+    if (node.left) stack.push(node.left);
+  }
+}
+```
+
+#### 普通树的深度优先遍历
+
+对于普通的多叉树，每个节点可以有多个子节点：
+
+**使用递归：**
+
+```javascript
+function dfs(root) {
+  if (!root) return;
+  console.log(root.value);
+  for (const child of root.children) {
+    dfs(child); // 递归每个子节点
+  }
+}
+```
+
+**使用栈迭代实现：**
+
+```javascript
+function dfsIterative(root) {
+  if (!root) return;
+  const stack = [root];
+  while (stack.length) {
+    const node = stack.pop();
+    console.log(node.value);
+    // 子节点反向入栈
+    for (let i = node.children.length - 1; i >= 0; i--) {
+      stack.push(node.children[i]);
+    }
+  }
+}
+```
+
+### 广度优先遍历（BFS）
+
+**广度优先遍历**（Breadth-First Search，BFS）按层级遍历树，从上到下访问每一层的所有节点。
+
+使用**队列（Queue）**来实现：
+
+```typescript
+function breadthFirstSearch(root: Node | null): void {
+  if (!root) return;
+  const queue: Node[] = [root];
+  while (queue.length > 0) {
+    const node = queue.shift()!;
+    console.log(node.value);
+    for (const child of node.children) {
+      queue.push(child);
+    }
+  }
+}
+```
+
+---
+
+### DFS 和 BFS 对比
+
+| 特性                | DFS                      | BFS                   |
+|---------------------|--------------------------|-----------------------|
+| **访问顺序**         | 深度方向优先              | 层级顺序优先             |
+| **数据结构**         | 栈（递归/显式栈）         | 队列                    |
+| **空间复杂度**       | O(h)（h为树高度）         | O(w)（w为树最大宽度）     |
+| **适用场景**         | 路径查找/拓扑排序         | 最短路径/层级遍历         |
+| **实现复杂度**       | 递归实现简单              | 需显式维护队列            |
+
+#### DFS遍历顺序（前序）
+
+```mermaid
+graph TD
+    A --> B
+    A --> C
+    B --> D
+    B --> E
+    C --> F
+    style A fill:#f9f
+    style B fill:#f9f
+    style D fill:#f9f
+    style E fill:#f9f
+    style C fill:#f9f
+    style F fill:#f9f
+```
+
+访问顺序：A → B → D → E → C → F
+
+#### BFS遍历顺序
+
+```mermaid
+graph TD
+    A --> B
+    A --> C
+    B --> D
+    B --> E
+    C --> F
+    style A fill:#9ff
+    style B fill:#9ff
+    style C fill:#9ff
+    style D fill:#9ff
+    style E fill:#9ff
+    style F fill:#9ff
+```
+
+访问顺序：A → B → C → D → E → F
+
+### 如何选择
+
+#### 何时选择 DFS（深度优先遍历）？
+
+**适合处理路径相关问题**  
+例如：「是否存在一条路径，其路径和为目标值？」
+
+```javascript
+// 查找从根到叶子的路径和
+function dfsPathSum(root, target) {
+  if (!root) return false;
+  target -= root.val;
+  if (!root.left && !root.right) return target === 0;
+  return dfsPathSum(root.left, target) || dfsPathSum(root.right, target);
+}
+```
+
+**典型应用场景**  
+
+- 文件系统的全路径扫描（如查找所有 `.md` 文件）  
+- 算法题中的组合 / 排列（如 N 皇后、子集等）  
+- 所有涉及**回溯**的场景（Backtracking）
+
+**更优的空间效率**  
+当树的**深度（h）远小于宽度（n）**时，DFS 的空间复杂度 O(h) 明显优于 BFS 的 O(n)
+
+---
+
+#### 何时选择 BFS（广度优先遍历）？
+
+**适合处理层级结构问题**  
+例如：「计算每一层的平均值？」
+
+```javascript
+// 层级平均值计算
+function bfsLevelAverage(root) {
+  const queue = [root];
+  const result = [];
+  while (queue.length) {
+    let levelSum = 0;
+    const levelSize = queue.length;
+    for (let i = 0; i < levelSize; i++) {
+      const node = queue.shift();
+      levelSum += node.val;
+      if (node.left) queue.push(node.left);
+      if (node.right) queue.push(node.right);
+    }
+    result.push(levelSum / levelSize);
+  }
+  return result;
+}
+```
+
+**最短路径相关场景**  
+
+- 社交网络的好友推荐（第二、三度连接）  
+- 网页爬虫的层级限制  
+- 迷宫、地图中的最短路径搜索（如走迷宫）
+
+**树结构平衡或宽度可控时**  
+BFS 空间复杂度与当前层节点数量有关，适合宽度不大的树结构
+
+---
+
+#### 决策流程图
+
+```mermaid
+graph TD
+    A[需要遍历树?] --> B{是否需要最短路径?}
+    B -->|Yes| C[BFS 更合适]
+    B -->|No| D{是否处理完整路径?}
+    D -->|Yes| E[DFS 更合适]
+    D -->|No| F{树深度 vs 宽度?}
+    F -->|深且窄| E
+    F -->|宽且浅| C
+```
+
+---
+
+#### 常见场景对照表
+
+| 场景特征                      | 推荐算法 | 原因说明                            |
+|-----------------------------|----------|-------------------------------------|
+| 是否存在一条路径满足条件？     | DFS      | 深度探索单一路径效率更高              |
+| 离根节点最近的满足条件节点？   | BFS      | 层序遍历，先访问浅层节点，保证最近性    |
+| 树的深度超过 1000 层？        | 迭代 DFS | 避免递归栈溢出，浏览器/JS栈有限         |
+| 需要序列化整个树结构？         | BFS      | 层级序列化便于还原结构（如 LeetCode 输入）|
+| 查找所有叶子节点？             | 均可      | DFS 更简洁，BFS 更直观                 |
+
+## 总结
+
+树是一种重要的数据结构，广泛应用于文件系统、数据库索引、前端虚拟 DOM、人工智能的决策树等场景。理解树的基本概念、二叉树的分类、以及深度优先和广度优先遍历方法，对于学习算法和数据结构至关重要。
+
+在实际应用中，选择合适的存储方式（链表或数组）和遍历方式（DFS 或 BFS），可以提高算法的效率，使程序更加高效和易维护。
