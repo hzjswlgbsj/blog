@@ -4,8 +4,6 @@
 
 树是前端开发中非常重要的数据结构，无论是DOM树、组件树还是算法中的应用，都离不开树的理解。本文将系统介绍树的基本概念、分类和遍历方法。
 
-## 基本概念
-
 ### 什么是树？
 
 树是一种**非线性数据结构**，它完美模拟了现实世界中许多层次关系比如：
@@ -102,12 +100,23 @@ interface BinaryTreeNode {
 
 **深度优先遍历**（Depth-First Search，DFS）按照纵向方向深入到树的叶子节点，然后回溯。可以用递归或栈来实现。
 
-#### 二叉树的深度优先遍历
+#### 二叉树的 DFS
 
 **前序遍历（Preorder）**：
-先访问根节点 → 左子树 → 右子树
 
 ```javascript
+/**
+ * 先访问根节点 → 左子树 → 右子树
+ *      A
+ *     / \
+ *    B   C
+ *    / \   \
+ *   D   E   F
+ *      / \
+ *     G   H
+ * 
+ * 访问顺序：A → B → D → E → G → H → C → F
+ */
 function preorder(root) {
   if (!root) return;
   console.log(root.value); // 先访问根
@@ -117,9 +126,20 @@ function preorder(root) {
 ```
 
 **中序遍历（Inorder）**：
-先访问左子树 → 根节点 → 右子树
 
 ```javascript
+/**
+ * 先访问左子树 → 根节点 → 右子树
+ *      A
+ *     / \
+ *    B   C
+ *    / \   \
+ *   D   E   F
+ *      / \
+ *     G   H
+ * 
+ * 访问顺序：D → B → G → E → H → A → C → F
+ */
 function inorder(root) {
   if (!root) return;
   inorder(root.left);    // 先左子树
@@ -129,9 +149,20 @@ function inorder(root) {
 ```
 
 **后序遍历（Postorder）**：
-先访问左子树 → 右子树 → 根节点
 
 ```javascript
+/**
+ * 先访问左子树 → 右子树 → 根节点
+ *      A
+ *     / \
+ *    B   C
+ *    / \   \
+ *   D   E   F
+ *      / \
+ *     G   H
+ * 
+ * 访问顺序：D → G → H → E → B → F → C → A
+ */
 function postorder(root) {
   if (!root) return;
   postorder(root.left);    // 先左子树
@@ -140,20 +171,161 @@ function postorder(root) {
 }
 ```
 
-**迭代实现 DFS（使用栈）**：
-这里演示前序遍历的迭代实现，使用栈来实现。
+#### 二叉树的 DFS 非递归实现
+
+**前序遍历迭代实现**：
+
+```typescript
+function preorderTraversalNonRecursive(root: TreeNode | null): number[] {
+  if (!root) return [];
+  const result: number[] = [];
+  const stack: TreeNode[] = [root];
+  while (stack.length) {
+    const node = stack.pop();
+    if (!node) continue;
+    /** 前序遍历：根 -> 左 -> 右 */
+    result.push(node.val);
+    /** 注意：栈是先入后出的，所以右子树要先入栈，左子树后入栈 */
+    if (node?.right) stack.push(node.right);
+    if (node?.left) stack.push(node.left);
+  }
+
+  return result;
+}
+```
+
+**中序遍历迭代实现**：
+
+```typescript
+export function inorderTraversalNonRecursive(root: TreeNode | null): number[] {
+  if (!root) return [];
+  const result: number[] = [];
+  const stack: TreeNode[] = [];
+  /** 中序遍历：左 -> 根 -> 右 */
+  while (stack.length || root) {
+    if (root) {
+      stack.push(root);
+      /** 一直找左子树直到左子树为空 */
+      root = root.left;
+    } else {
+      /** 没有 root 了说明当前在最深最左边，弹出栈顶元素 */
+      const node = stack.pop()!;
+      result.push(node.val);
+      /** 访问完左子树后，访问右子树 */
+      root = node.right;
+    }
+  }
+  return result;
+}
+```
+
+**后序遍历迭代实现**：
+
+```typescript
+export function postorderTraversalNonRecursive(
+  root: TreeNode | null
+): number[] {
+  const result: number[] = [];
+  const stack: TreeNode[] = [];
+  /** 
+   * 为什么需要 prev ?
+   * 我们不能单靠栈判断“右子树是否已访问”。所以需要额外变量 prev（上一个访问的节点）来判断：
+   * 当前节点的右子树：
+   * 如果为空，或者
+   * 如果右子树已经访问过（node.right === prev）
+   * → 才能访问当前节点（“根”）
+   */
+  let prev: TreeNode | null = null;
+  let curr = root;
+
+  while (curr || stack.length) {
+    // 先一路向左，把所有左节点压栈
+    while (curr) {
+      stack.push(curr);
+      curr = curr.left;
+    }
+
+    // 查看栈顶节点（但不弹出）
+    curr = stack[stack.length - 1];
+
+    /**
+     * 判断当前节点是否可以访问：
+     * - 没有右子树（说明左右都处理完了）
+     * - 或右子树已经被访问过（通过 prev 记录）
+     */
+    if (!curr.right || curr.right === prev) {
+      result.push(curr.val); // 访问当前节点
+      stack.pop(); // 弹出节点
+      prev = curr; // 标记为已访问
+      curr = null; // 不再往右走
+    } else {
+      // 右子树还没访问过，转向右子树
+      curr = curr.right;
+    }
+  }
+
+  return result;
+}
+```
+
+二叉树的后序遍历非递归实现相对来说要复杂一些，再来捋一捋。
+
+与中序遍历不同的是我们需要使用一个指针 `prev` 记录“上一个访问的节点”，以此判断“右子树是否已经被访问”。
 
 ```javascript
-function preorderTraversalIterative(root: Node | null): void {
-  if (!root) return;
-  const stack: Node[] = [root];
+先访问左子树 → 右子树 → 根节点
+      A
+     / \
+    B   C
+    / \   \
+   D   E   F
+      / \
+     G   H
+ 
+访问顺序：D → G → H → E → B → F → C → A
+```
+
+**关键点解释：**
+
+- **后序遍历要等左右子树都处理完才能访问当前节点**，因此不能像前序/中序那样一边走一边访问。
+- **判断当前节点是否可以访问的条件**：
+  1. 当前节点没有右子树
+  2. 或者右子树已经访问过（通过 `prev` 判断）
+- `prev` 是一个非常关键的变量，用来追踪“上一次访问的节点”。
+
+**步骤流程：**
+
+1. 一直向左走，把左子树的所有节点压栈。
+2. 查看栈顶节点（不弹出）：
+   - 如果它没有右子树，或者右子树已访问过，则访问它。
+   - 否则进入右子树。
+3. 每次访问后，更新 `prev = 当前节点`，用于下次判断。
+
+其实还可以使用前序反转法，就是前序遍历改一下，先访问右子树，再访问左子树，这样就是后序遍历的逆序。
+
+```typescript
+/**
+ * Trick：变形前序遍历 + reverse
+ * 遍历顺序：根 → 右 → 左，再反转成 左 → 右 → 根（即后序）
+ */
+export function postorderTraversalViaReverse(root: TreeNode | null): number[] {
+  if (!root) return [];
+
+  const result: number[] = [];
+  const stack: TreeNode[] = [root];
+
   while (stack.length > 0) {
     const node = stack.pop()!;
-    console.log(node.value);
-    if (node.right) stack.push(node.right);
+    result.push(node.val);
+
+    // 注意：先压左，再压右，这样出栈顺序是右 → 左
     if (node.left) stack.push(node.left);
+    if (node.right) stack.push(node.right);
   }
+
+  return result.reverse();
 }
+
 ```
 
 #### 普通树的深度优先遍历
