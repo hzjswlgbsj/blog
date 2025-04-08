@@ -222,7 +222,7 @@ export { Link as default, sanitize };
 
 剪切板，监听原生的 copy、cut、paste 事件并做处理。
 
-每次剪切、粘贴的时候都会触发对应的处理，他们会维护一个`matchers`，的数组，他只能解析出 quill 支持的类型。然后转化为 `Delta `, 然后使用 `updateContents()` 来粘贴内容。
+每次剪切、粘贴的时候都会触发对应的处理，他们会维护一个`matchers`，的数组，他只能解析出 quill 支持的类型。然后转化为 `Delta`, 然后使用 `updateContents()` 来粘贴内容。
 
 关于粘贴图片，他在这边也做了处理，使得实现粘贴图片然后自定义处理方式变得简单。
 
@@ -263,14 +263,6 @@ mimetypes: ["image/png", "image/jpeg"];
 主题这边其实没啥好说的， 其实就是结合 `toolbar` 模块，做一些外观设计，然后去调用 `core/quill` 里面的 api 就好了。 他实现了一个`base.js` 基类倒是在自定义主题的时候有点用。
 
 目前 quill 支持两种主题：bubble 和 snow，前者就是沉浸式的，没有 toolbar，根据 selection 来出现小浮框，后者就是传统的富文本编辑器都有的 toolbar。
-
-### quill 的构件图
-
-额，没来得及画...
-
-### quill 的类图图
-
-额，没来得及画...
 
 ## Quill 的 DOM 文档流
 
