@@ -23,6 +23,8 @@
 3. **父节点(Parent)**: 指向子节点的节点
 4. **叶节点(Leaf)**: 没有子节点的节点
 5. **子树(Subtree)**: 某个节点及其所有后代组成的树
+6. **兄弟节点(Sibling)**：有同一个父节点的节点
+7. **路径(Path)**：从一个节点到另一个节点的边的集合
 
 ![树结构示意图](https://lib.sixtyden.com/tree.jpg)
 
@@ -37,7 +39,7 @@ interface TreeNode {
 }
 ```
 
-### 重要术语
+### 节点的属性：深度、高度、层级
 
 - **高度(Height)**：节点到最远叶节点的最长路径边数
 - **深度(Depth)**：根节点到该节点的边数
@@ -53,10 +55,10 @@ interface TreeNode {
 - 右子节点(right child)
 
 ```typescript
-interface BinaryTreeNode {
+interface TreeNode {
   value: any;
-  left: BinaryTreeNode | null;
-  right: BinaryTreeNode | null;
+  left: TreeNode | null;
+  right: TreeNode | null;
 }
 ```
 
@@ -117,7 +119,7 @@ interface BinaryTreeNode {
  * 
  * 访问顺序：A → B → D → E → G → H → C → F
  */
-function preorder(root) {
+export function preorder(root) {
   if (!root) return;
   console.log(root.value); // 先访问根
   preorder(root.left);    // 再左子树
@@ -140,7 +142,7 @@ function preorder(root) {
  * 
  * 访问顺序：D → B → G → E → H → A → C → F
  */
-function inorder(root) {
+export function inorder(root) {
   if (!root) return;
   inorder(root.left);    // 先左子树
   console.log(root.value); // 再访问根
@@ -163,7 +165,7 @@ function inorder(root) {
  * 
  * 访问顺序：D → G → H → E → B → F → C → A
  */
-function postorder(root) {
+export function postorder(root) {
   if (!root) return;
   postorder(root.left);    // 先左子树
   postorder(root.right);   // 再右子树
@@ -176,7 +178,7 @@ function postorder(root) {
 **前序遍历迭代实现**：
 
 ```typescript
-function preorderTraversalNonRecursive(root: TreeNode | null): number[] {
+export function preorderTraversalNonRecursive(root: TreeNode | null): number[] {
   if (!root) return [];
   const result: number[] = [];
   const stack: TreeNode[] = [root];
@@ -184,7 +186,7 @@ function preorderTraversalNonRecursive(root: TreeNode | null): number[] {
     const node = stack.pop();
     if (!node) continue;
     /** 前序遍历：根 -> 左 -> 右 */
-    result.push(node.val);
+    result.push(node.value);
     /** 注意：栈是先入后出的，所以右子树要先入栈，左子树后入栈 */
     if (node?.right) stack.push(node.right);
     if (node?.left) stack.push(node.left);
@@ -210,7 +212,7 @@ export function inorderTraversalNonRecursive(root: TreeNode | null): number[] {
     } else {
       /** 没有 root 了说明当前在最深最左边，弹出栈顶元素 */
       const node = stack.pop()!;
-      result.push(node.val);
+      result.push(node.value);
       /** 访问完左子树后，访问右子树 */
       root = node.right;
     }
@@ -254,7 +256,7 @@ export function postorderTraversalNonRecursive(
      * - 或右子树已经被访问过（通过 prev 记录）
      */
     if (!curr.right || curr.right === prev) {
-      result.push(curr.val); // 访问当前节点
+      result.push(curr.value); // 访问当前节点
       stack.pop(); // 弹出节点
       prev = curr; // 标记为已访问
       curr = null; // 不再往右走
@@ -316,7 +318,7 @@ export function postorderTraversalViaReverse(root: TreeNode | null): number[] {
 
   while (stack.length > 0) {
     const node = stack.pop()!;
-    result.push(node.val);
+    result.push(node.value);
 
     // 注意：先压左，再压右，这样出栈顺序是右 → 左
     if (node.left) stack.push(node.left);
@@ -325,8 +327,9 @@ export function postorderTraversalViaReverse(root: TreeNode | null): number[] {
 
   return result.reverse();
 }
-
 ```
+
+该方法逻辑简洁、易于记忆，是面试中常见的写法技巧之一。
 
 #### 普通树的深度优先遍历
 
@@ -335,7 +338,7 @@ export function postorderTraversalViaReverse(root: TreeNode | null): number[] {
 **使用递归：**
 
 ```javascript
-function dfs(root) {
+export function dfs(root) {
   if (!root) return;
   console.log(root.value);
   for (const child of root.children) {
@@ -347,7 +350,7 @@ function dfs(root) {
 **使用栈迭代实现：**
 
 ```javascript
-function dfsIterative(root) {
+export function dfsIterative(root) {
   if (!root) return;
   const stack = [root];
   while (stack.length) {
@@ -368,9 +371,9 @@ function dfsIterative(root) {
 使用**队列（Queue）**来实现：
 
 ```typescript
-function breadthFirstSearch(root: Node | null): void {
+export function breadthFirstSearch(root: TreeNode | null): void {
   if (!root) return;
-  const queue: Node[] = [root];
+  const queue: TreeNode[] = [root];
   while (queue.length > 0) {
     const node = queue.shift()!;
     console.log(node.value);
@@ -440,9 +443,9 @@ graph TD
 
 ```javascript
 // 查找从根到叶子的路径和
-function dfsPathSum(root, target) {
+export function dfsPathSum(root, target) {
   if (!root) return false;
-  target -= root.val;
+  target -= root.value;
   if (!root.left && !root.right) return target === 0;
   return dfsPathSum(root.left, target) || dfsPathSum(root.right, target);
 }
@@ -466,7 +469,7 @@ function dfsPathSum(root, target) {
 
 ```javascript
 // 层级平均值计算
-function bfsLevelAverage(root) {
+export function bfsLevelAverage(root) {
   const queue = [root];
   const result = [];
   while (queue.length) {
@@ -474,7 +477,7 @@ function bfsLevelAverage(root) {
     const levelSize = queue.length;
     for (let i = 0; i < levelSize; i++) {
       const node = queue.shift();
-      levelSum += node.val;
+      levelSum += node.value;
       if (node.left) queue.push(node.left);
       if (node.right) queue.push(node.right);
     }
@@ -525,3 +528,11 @@ graph TD
 树是一种重要的数据结构，广泛应用于文件系统、数据库索引、前端虚拟 DOM、人工智能的决策树等场景。理解树的基本概念、二叉树的分类、以及深度优先和广度优先遍历方法，对于学习算法和数据结构至关重要。
 
 在实际应用中，选择合适的存储方式（链表或数组）和遍历方式（DFS 或 BFS），可以提高算法的效率，使程序更加高效和易维护。
+
+再总结一下：
+
+- 树是一种**层级型非线性结构**，广泛用于前端中的 DOM、组件、算法建模等。
+- 二叉树是最常见的形式，分类如 BST、AVL、红黑树有各自应用场景。
+- 遍历分为 DFS 与 BFS，根据目标（路径查找 / 层次分析）选择最合适策略。
+- 面试中高频考察 DFS 非递归写法，掌握三种遍历顺序 + 迭代技巧尤为重要。
+- 实战中合理选择存储结构与遍历方式可显著提升算法性能。
