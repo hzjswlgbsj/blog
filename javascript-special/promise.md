@@ -494,7 +494,6 @@ MyPromise.prototype.then = function (onfulfilled, onRejected) {
           0
         );
       } else {
-        d2qwe;
         /** 如果当前状态是 rejected，那就执行 onRejected 回调函数就行不需要缓存了 */
         setTimeout(
           () => handleCallback(onRejected, this.reason, resolve, reject),
@@ -682,3 +681,68 @@ module.exports = { MyPromise };
 ```
 
 这就是 `Promise` 的基本原理与基础实现，最重要的就是 `then` 方法的实现，所以理解了 `then` 方法，就基本能理解 `Promise` 的运行机制了，希望对你有帮助 🚀！
+
+## Promise 实用
+
+除了常规的使用方式，还可以使用 Promise 来封装一个通用的异步任务
+
+```typescript
+export type AsyncWorkStateT = 'pending' | 'resolved' | 'rejected';
+
+export interface IAsyncWork<T> {
+  readonly result: Promise<T>;
+  readonly state: AsyncWorkStateT;
+  done(result: T): void;
+  fail(error: any): void;
+}
+
+export class AsyncWork<T> implements IAsyncWork<T> {
+  private _res: ((result: T | PromiseLike<T>) => void) | undefined;
+  private _rej: ((reason: any) => void) | undefined;
+  private _state: AsyncWorkStateT = 'pending';
+  private _promise = new Promise<T>((res, rej) => {
+    this._res = res;
+    this._rej = rej;
+  });
+  get state() {
+    return this._state;
+  }
+  get result() {
+    return this._promise;
+  }
+  done(result: T) {
+    if (this._res) {
+      this._state = 'resolved';
+      this._res(result);
+      this._res = this._rej = undefined;
+    }
+  }
+
+  fail(error: any) {
+    if (this._rej) {
+      this._state = 'rejected';
+      this._rej(error);
+      this._res = this._rej = undefined;
+    }
+  }
+}
+```
+
+这个类的主要用途是：
+
+- 当你需要构建一个可以手动控制的异步操作（比如等待某个事件或外部回调）；
+- 比普通 Promise 更具灵活性和可控性；
+- 状态可查询，适合结合 UI 状态反馈（比如 loading / success / error 状态）。
+
+比如:
+
+```typescript
+const work = new AsyncWork<number>();
+// 可以直接在这里触发等待，因为接下来的逻辑需要得到某个很长的异步任务的结果，或者状态
+await work.result;
+
+// 然后在你想在的任何时间去接触等待，这里可能经历了非常长，非常复杂的异步任务
+setTimeout(() => {
+  work.done(42);
+}, 1000);
+```
