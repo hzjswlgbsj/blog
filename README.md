@@ -1,8 +1,8 @@
 大家好，这里是 [sixty's blog](https://www.sixtyden.com)，我将在这里写文章做总结，如果能帮助到你，欢迎 star！
 
- 早期自己用 PHP 搭过博客，后来用 vue 重写，但是现在我使用 github + doscify 来维护博客，这种方式简单、高效，具备版本管理，不需要自己备份数据，专注于写文章本身，我把搭建过程写成了傻瓜式教程，[欢迎照搬](normal/Centos+Docker+Nginx+Doscify+Github搭建博客全教程.md)。
+早期自己用 PHP 搭过博客，后来用 vue 重写，但是现在我使用 github + doscify 来维护博客，这种方式简单、高效，具备版本管理，不需要自己备份数据，专注于写文章本身，我把搭建过程写成了傻瓜式教程，[欢迎照搬](normal/Centos+Docker+Nginx+Doscify+Github搭建博客全教程.md)。
 
- 写博客主要在于总结记录，其次才是是传播知识，个人定位于自我总结，主要是对学习的记录，如果对别人有帮助那可真是荣幸，如果你恰巧阅读到我写的文章，请不吝指导，万分感谢！
+写博客主要在于总结记录，其次才是是传播知识，个人定位于自我总结，主要是对学习的记录，如果对别人有帮助那可真是荣幸，如果你恰巧阅读到我写的文章，请不吝指导，万分感谢！
 
 ## 🍀 技术杂文
 
@@ -51,7 +51,7 @@
 
 ## 🍃 数据结构与算法
 
- 算法这块内容我有做一些 [笔记](https://github.com/hzjswlgbsj/algorithm-study)，里面主要是 Letcode 的一些解题思路，这里只放一些数据结构基础知识。
+算法这块内容我有做一些 [笔记](https://github.com/hzjswlgbsj/algorithm-study)，里面主要是 Letcode 的一些解题思路，这里只放一些数据结构基础知识。
 
 - [位运算](algorithm/BitManipulation.md)
 - [链表](algorithm/LinkedList.md)
@@ -72,6 +72,7 @@
 ## 🌴 深入 Vue3
 
 - [响应式系统设计](vue/响应式系统设计.md)
+- [渲染机制](vue/渲染机制.md)
 
 ## 🍂 单元测试
 
