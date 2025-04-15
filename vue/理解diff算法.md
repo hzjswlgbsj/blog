@@ -9,7 +9,7 @@ flowchart TD
     C --> D[执行render函数]
     D --> E[生成VNode树]
     E --> F[patch阶段]
-    
+
     subgraph patch流程
         F --> G{是否存在旧VNode?}
         G -->|否| H[mountElement]
@@ -23,37 +23,37 @@ flowchart TD
 ## 核心逻辑
 
 ```javascript
+/**
+ * 根据新旧虚拟节点来更新 element 的视图，这个过程比较复杂，这里会拆分问题:
+ * 更新props、
+ * @param n1 更新前的vnode
+ * @param n2 本次要更新的vnode
+ * @param container 根容器
+ * @param parentComponent 父组件
+ */
+function patchElement(
+  n1: VNode,
+  n2: VNode,
+  container: HTMLElement,
+  parentComponent: any,
+  anchor: any
+) {
+  console.log(TAG, "patchElement", "开始执行DOM元素类型的更新操作", n1, n2);
+
+  /** 更新 props */
+  const oldProps = n1.props || EMPTY_OBJ;
+  const newProps = n2.props || EMPTY_OBJ;
   /**
-   * 根据新旧虚拟节点来更新 element 的视图，这个过程比较复杂，这里会拆分问题:
-   * 更新props、
-   * @param n1 更新前的vnode
-   * @param n2 本次要更新的vnode
-   * @param container 根容器
-   * @param parentComponent 父组件
+   * 想想 el 在哪里赋值的？在 mountElement 的时候不仅创建了el还将它赋值到了vnode上
+   * 同理 我们这里需要将更新前的el赋值给更新后的vnode上，确保下一次的更新 vnode上有el
    */
-  function patchElement(
-    n1: VNode,
-    n2: VNode,
-    container: HTMLElement,
-    parentComponent: any,
-    anchor: any
-  ) {
-    console.log(TAG, 'patchElement', '开始执行DOM元素类型的更新操作', n1, n2)
+  const el = (n2.el = n1.el);
 
-    /** 更新 props */
-    const oldProps = n1.props || EMPTY_OBJ
-    const newProps = n2.props || EMPTY_OBJ
-    /**
-     * 想想 el 在哪里赋值的？在 mountElement 的时候不仅创建了el还将它赋值到了vnode上
-     * 同理 我们这里需要将更新前的el赋值给更新后的vnode上，确保下一次的更新 vnode上有el
-    */ 
-    const el = (n2.el = n1.el)
+  patchProps(el, oldProps, newProps);
 
-    patchProps(el, oldProps, newProps)
-
-    /** 更新 children */
-    patchChildren(n1, n2, el, parentComponent, anchor)
-  }
+  /** 更新 children */
+  patchChildren(n1, n2, el, parentComponent, anchor);
+}
 ```
 
 ## 优化 Diff 策略
@@ -64,12 +64,12 @@ flowchart TD
 
 ### 架构差异
 
-| 特性              | Vue2              | Vue3                |
-|------------------|-------------------|---------------------|
-| 虚拟节点创建       | new VNode()       | createVNode()       |
-| Diff 策略         | 全量比较           | 基于动态绑定的靶向更新 |
-| 静态节点处理       | 每次参与           | 编译时静态提升        |
-| 事件处理          | 作为特殊属性处理     | 作为普通 props 处理   |
+| 特性         | Vue2             | Vue3                   |
+| ------------ | ---------------- | ---------------------- |
+| 虚拟节点创建 | new VNode()      | createVNode()          |
+| Diff 策略    | 全量比较         | 基于动态绑定的靶向更新 |
+| 静态节点处理 | 每次参与         | 编译时静态提升         |
+| 事件处理     | 作为特殊属性处理 | 作为普通 props 处理    |
 
 ### 核心差异实现
 
@@ -77,15 +77,16 @@ flowchart TD
 
 ```javascript
 function updateChildren(oldCh, newCh, parentElm) {
-  let oldStartIdx = 0, newStartIdx = 0
-  let oldEndIdx = oldCh.length - 1
-  let newEndIdx = newCh.length - 1
-  
+  let oldStartIdx = 0,
+    newStartIdx = 0;
+  let oldEndIdx = oldCh.length - 1;
+  let newEndIdx = newCh.length - 1;
+
   while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
     if (sameVnode(oldCh[oldStartIdx], newCh[newStartIdx])) {
-      patchVnode(oldCh[oldStartIdx], newCh[newStartIdx])
-      oldStartIdx++
-      newStartIdx++
+      patchVnode(oldCh[oldStartIdx], newCh[newStartIdx]);
+      oldStartIdx++;
+      newStartIdx++;
     }
     // ...
   }
@@ -96,12 +97,20 @@ function updateChildren(oldCh, newCh, parentElm) {
 
 ```javascript
 function render(_ctx) {
-  return (_openBlock(), _createBlock('div', null, [
-    _createVNode('span', null, 'Static'),
-    _createVNode('span', {
-      class: _ctx.dynamicClass
-    }, _ctx.dynamicText, 12 /* CLASS, TEXT */)
-  ]))
+  return (
+    _openBlock(),
+    _createBlock("div", null, [
+      _createVNode("span", null, "Static"),
+      _createVNode(
+        "span",
+        {
+          class: _ctx.dynamicClass,
+        },
+        _ctx.dynamicText,
+        12 /* CLASS, TEXT */
+      ),
+    ])
+  );
 }
 ```
 
@@ -110,29 +119,29 @@ function render(_ctx) {
 ```javascript
 const app = {
   data() {
-    return { count: 0 }
+    return { count: 0 };
   },
   methods: {
     increment() {
-      this.count++
+      this.count++;
       nextTick(() => {
-        console.log('DOM updated')
-      })
-    }
-  }
-}
+        console.log("DOM updated");
+      });
+    },
+  },
+};
 ```
 
 #### 异步更新队列实现
 
 ```javascript
-const queue = []
-let isFlushing = false
+const queue = [];
+let isFlushing = false;
 
 function queueJob(job) {
   if (!queue.includes(job)) {
-    queue.push(job)
-    queueFlush()
+    queue.push(job);
+    queueFlush();
   }
 }
 ```
