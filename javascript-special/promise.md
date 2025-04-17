@@ -26,11 +26,13 @@
 - 通过 **链式调用** 解决回调地狱问题，使代码更加可读。
 
 2. **状态一旦改变就不可逆**：
+
    - `pending → fulfilled`
    - `pending → rejected`
    - 但 **`fulfilled/rejected` 不能再变回 `pending`**。
 
 3. **Promise 是基于回调的，但解决了回调嵌套的问题**：
+
    - 通过 `then` 让异步操作可以 **链式调用**，避免回调地狱。
 
 4. **Promise 使异步操作更加可控**：
@@ -150,8 +152,7 @@ finally 方法无论 fulfilled 还是 rejected 都会执行，但不会影响 Pr
 ```javascript
 const p = new Promise((resolve) => resolve(100));
 
-p.finally(() => console.log("清理资源"))
- .then((value) => console.log(value)); 
+p.finally(() => console.log("清理资源")).then((value) => console.log(value));
 
 // 输出：
 // 清理资源
@@ -163,8 +164,9 @@ p.finally(() => console.log("清理资源"))
 ```javascript
 const p = new Promise((resolve) => resolve(100));
 
-p.finally(() => new Promise((res) => setTimeout(res, 1000)))
- .then((value) => console.log(value)); 
+p.finally(() => new Promise((res) => setTimeout(res, 1000))).then((value) =>
+  console.log(value)
+);
 
 // 1秒后输出：100
 ```
@@ -687,7 +689,7 @@ module.exports = { MyPromise };
 除了常规的使用方式，还可以使用 Promise 来封装一个通用的异步任务
 
 ```typescript
-export type AsyncWorkStateT = 'pending' | 'resolved' | 'rejected';
+export type AsyncWorkStateT = "pending" | "resolved" | "rejected";
 
 export interface IAsyncWork<T> {
   readonly result: Promise<T>;
@@ -699,7 +701,7 @@ export interface IAsyncWork<T> {
 export class AsyncWork<T> implements IAsyncWork<T> {
   private _res: ((result: T | PromiseLike<T>) => void) | undefined;
   private _rej: ((reason: any) => void) | undefined;
-  private _state: AsyncWorkStateT = 'pending';
+  private _state: AsyncWorkStateT = "pending";
   private _promise = new Promise<T>((res, rej) => {
     this._res = res;
     this._rej = rej;
@@ -712,7 +714,7 @@ export class AsyncWork<T> implements IAsyncWork<T> {
   }
   done(result: T) {
     if (this._res) {
-      this._state = 'resolved';
+      this._state = "resolved";
       this._res(result);
       this._res = this._rej = undefined;
     }
@@ -720,7 +722,7 @@ export class AsyncWork<T> implements IAsyncWork<T> {
 
   fail(error: any) {
     if (this._rej) {
-      this._state = 'rejected';
+      this._state = "rejected";
       this._rej(error);
       this._res = this._rej = undefined;
     }
@@ -746,3 +748,224 @@ setTimeout(() => {
   work.done(42);
 }, 1000);
 ```
+
+那么我们可以在基础之上更进一步，封装出一个通用的异步任务队列
+
+```typescript
+export function isPromise(v: any): v is Promise<any> {
+  return v instanceof Promise;
+}
+
+export class AsyncTaskQueue {
+  concurrencyLimit: number;
+  runningTaskCount: number;
+  queue: {
+    task: (() => Promise<any>) | (() => any);
+    resolve: (value: any | PromiseLike<any>) => void;
+    reject: (reason: any) => void;
+  }[];
+
+  constructor(concurrencyLimit: number) {
+    this.concurrencyLimit = concurrencyLimit;
+    this.runningTaskCount = 0;
+    this.queue = [];
+  }
+
+  push<T>(task: (() => Promise<T>) | (() => T) | Promise<T>): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
+      this.queue.push({
+        task: isPromise(task)
+          ? async () => {
+              return await task;
+            }
+          : task,
+        resolve,
+        reject,
+      });
+      this.run();
+    });
+  }
+
+  pushBatch<T>(
+    tasks: ((() => Promise<T>) | (() => T) | Promise<T>)[]
+  ): Promise<T[]> {
+    const queueTasks = tasks.map(
+      (task) =>
+        new Promise<T>((resolve, reject) => {
+          this.queue.push({
+            task: isPromise(task)
+              ? async () => {
+                  return await task;
+                }
+              : task,
+            resolve,
+            reject,
+          });
+        })
+    );
+    this.run();
+    return Promise.all(queueTasks);
+  }
+
+  async run(): Promise<void> {
+    if (
+      this.runningTaskCount < this.concurrencyLimit &&
+      this.queue.length > 0
+    ) {
+      const taskItem = this.queue.shift();
+      if (taskItem === undefined) {
+        this.run();
+        return;
+      }
+      const { task, resolve, reject } = taskItem;
+      this.runningTaskCount++;
+      try {
+        const result = await task();
+        resolve(result);
+      } catch (error) {
+        reject(error);
+      }
+      this.runningTaskCount--;
+      this.run();
+    }
+  }
+
+  cancelAll() {
+    this.queue = [];
+    return this;
+  }
+}
+
+/**
+ * 支持并发数设置的异步任务队列, 上方 AsyncTaskQueue 每次只会执行一个异步任务，用的地方比较多且均限 1。
+ * 就先不修改了。后续等 AsyncTaskQueue 支持并发后，再整个废弃 simpleAsyncTaskQueue，并改为 AsyncTaskQueue 类实现业务。
+ * 综上：当前先做最简单的实现
+ **/
+export const simpleAsyncTaskQueue = <T>(
+  tasks: ((...p: any[]) => Promise<T>)[],
+  maxConcurrent: number
+) => {
+  let isAborted = false;
+
+  // 新增 abort 方法
+  const abortRest = () => {
+    isAborted = true;
+  };
+
+  const promise = new Promise<T[]>((res, rej) => {
+    // 当前正在执行的任务索引
+    let currentIndex = 0;
+    // 当前正在运行的任务数量
+    let runningCount = 0;
+    // 存储所有异步任务的执行结果
+    const results: T[] = [];
+    const taskCount = tasks.length;
+
+    // 定义启动任务的函数
+    const startTask = () => {
+      while (
+        runningCount < maxConcurrent &&
+        currentIndex < taskCount &&
+        !isAborted
+      ) {
+        const index = currentIndex++;
+        runningCount++;
+
+        // 基于下标执行单个任务
+        tasks[index]()
+          .then((res: any) => {
+            // 存储当前任务的结果到数组中
+            results[index] = res;
+          })
+          .catch((err: any) => {
+            // 如果任何任务失败，则 reject 整个队列
+            rej(err);
+            // 清空队列以防止其他任务开始
+            currentIndex = taskCount;
+          })
+          .finally(() => {
+            runningCount--;
+            if (runningCount === 0 && currentIndex >= taskCount && !isAborted) {
+              // 所有任务都已完成后，resolve 整体 promise
+              res(results);
+            } else {
+              // 尝试启动更多任务
+              startTask();
+            }
+          });
+      }
+    };
+    // 启动初始批次的任务
+    startTask();
+  });
+
+  return {
+    promise,
+    /** abort 信号，执行后会停止执行尚未完成的 async tasks */
+    abortRest,
+  };
+};
+```
+
+### 示例一：限制并发的文件上传
+
+在批量上传文件的场景中，一次性同时发起大量请求可能会压垮浏览器或服务器。此时，我们可以借助 `AsyncTaskQueue` 来限制并发上传的数量：
+
+```typescript
+const queue = new AsyncTaskQueue(3); // 最多同时执行 3 个上传任务
+
+const uploadFile = (file: File) => {
+  return () =>
+    new Promise<string>((resolve) => {
+      const time = Math.random() * 2000 + 1000; // 模拟上传时间
+      setTimeout(() => {
+        console.log(`✅ 上传完成：${file.name}`);
+        resolve(`上传成功：${file.name}`);
+      }, time);
+    });
+};
+
+// 假设我们有 10 个文件
+const files = Array.from(
+  { length: 10 },
+  (_, i) => new File([], `file_${i}.txt`)
+);
+
+// 添加上传任务到队列
+const tasks = files.map((file) => queue.push(uploadFile(file)));
+
+Promise.all(tasks).then((res) => {
+  console.log("📦 所有文件上传完成", res);
+});
+```
+
+### 示例二：输入搜索建议请求防抖 + 顺序控制
+
+当用户快速输入时，你可能希望频繁发请求获取搜索建议，但又要避免请求乱序或重复。借助队列，我们可以确保请求是顺序执行的：
+
+```typescript
+const searchQueue = new AsyncTaskQueue(1); // 每次仅发一个请求，顺序执行
+
+function fetchSearchSuggestions(keyword: string) {
+  return () =>
+    fetch(`/api/search?q=${keyword}`)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("📥 搜索结果：", keyword, data);
+        return data;
+      });
+}
+
+// 模拟用户连续输入关键词
+["a", "ap", "app", "appl", "apple"].forEach((kw, index) => {
+  setTimeout(() => {
+    searchQueue.push(fetchSearchSuggestions(kw));
+  }, index * 100); // 模拟打字节奏
+});
+```
+
+这样我们做到了
+
+- 请求顺序可控，避免数据覆盖或错乱；
+- 队列控制 + 防抖机制非常适合搜索类组件；
+- 可轻松扩展成搜索节流、缓存优化等逻辑。
