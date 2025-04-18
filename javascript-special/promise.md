@@ -969,3 +969,35 @@ function fetchSearchSuggestions(keyword: string) {
 - 请求顺序可控，避免数据覆盖或错乱；
 - 队列控制 + 防抖机制非常适合搜索类组件；
 - 可轻松扩展成搜索节流、缓存优化等逻辑。
+
+再进一步，我们可以依赖 `AsyncTaskQueue` 做一个并发限制控制器
+
+```typescript
+import { AsyncTaskQueue } from "./async_task_queue";
+import { AsyncWork } from "./async_work";
+
+type Token = AsyncWork<void>;
+
+// 并发限制器
+export class ConcurrencyLimiter {
+  constructor(private options: { limit: number }) {
+    this.queue = new AsyncTaskQueue(this.options.limit);
+  }
+
+  private queue: AsyncTaskQueue;
+
+  acquire(): Promise<Token> {
+    return new Promise<Token>((resolve) => {
+      const token = new AsyncWork<void>();
+      this.queue.push(async () => {
+        resolve(token);
+        await token.result.finally(() => {});
+      });
+    });
+  }
+
+  release(token?: Token) {
+    token?.done();
+  }
+}
+```
