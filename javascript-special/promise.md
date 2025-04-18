@@ -835,84 +835,15 @@ export class AsyncTaskQueue {
     return this;
   }
 }
-
-/**
- * 支持并发数设置的异步任务队列, 上方 AsyncTaskQueue 每次只会执行一个异步任务，用的地方比较多且均限 1。
- * 就先不修改了。后续等 AsyncTaskQueue 支持并发后，再整个废弃 simpleAsyncTaskQueue，并改为 AsyncTaskQueue 类实现业务。
- * 综上：当前先做最简单的实现
- **/
-export const simpleAsyncTaskQueue = <T>(
-  tasks: ((...p: any[]) => Promise<T>)[],
-  maxConcurrent: number
-) => {
-  let isAborted = false;
-
-  // 新增 abort 方法
-  const abortRest = () => {
-    isAborted = true;
-  };
-
-  const promise = new Promise<T[]>((res, rej) => {
-    // 当前正在执行的任务索引
-    let currentIndex = 0;
-    // 当前正在运行的任务数量
-    let runningCount = 0;
-    // 存储所有异步任务的执行结果
-    const results: T[] = [];
-    const taskCount = tasks.length;
-
-    // 定义启动任务的函数
-    const startTask = () => {
-      while (
-        runningCount < maxConcurrent &&
-        currentIndex < taskCount &&
-        !isAborted
-      ) {
-        const index = currentIndex++;
-        runningCount++;
-
-        // 基于下标执行单个任务
-        tasks[index]()
-          .then((res: any) => {
-            // 存储当前任务的结果到数组中
-            results[index] = res;
-          })
-          .catch((err: any) => {
-            // 如果任何任务失败，则 reject 整个队列
-            rej(err);
-            // 清空队列以防止其他任务开始
-            currentIndex = taskCount;
-          })
-          .finally(() => {
-            runningCount--;
-            if (runningCount === 0 && currentIndex >= taskCount && !isAborted) {
-              // 所有任务都已完成后，resolve 整体 promise
-              res(results);
-            } else {
-              // 尝试启动更多任务
-              startTask();
-            }
-          });
-      }
-    };
-    // 启动初始批次的任务
-    startTask();
-  });
-
-  return {
-    promise,
-    /** abort 信号，执行后会停止执行尚未完成的 async tasks */
-    abortRest,
-  };
-};
 ```
 
-### 示例一：限制并发的文件上传
+**示例一：限制并发的文件上传**
 
 在批量上传文件的场景中，一次性同时发起大量请求可能会压垮浏览器或服务器。此时，我们可以借助 `AsyncTaskQueue` 来限制并发上传的数量：
 
 ```typescript
-const queue = new AsyncTaskQueue(3); // 最多同时执行 3 个上传任务
+/** 最多同时执行 3 个上传任务 */
+const queue = new AsyncTaskQueue(3);
 
 const uploadFile = (file: File) => {
   return () =>
@@ -925,38 +856,39 @@ const uploadFile = (file: File) => {
     });
 };
 
-// 假设我们有 10 个文件
+/** 假设我们有 10 个文件 */
 const files = Array.from(
   { length: 10 },
   (_, i) => new File([], `file_${i}.txt`)
 );
 
-// 添加上传任务到队列
+/** 添加上传任务到队列 */
 const tasks = files.map((file) => queue.push(uploadFile(file)));
 
 Promise.all(tasks).then((res) => {
-  console.log("📦 所有文件上传完成", res);
+  console.log("所有文件上传完成", res);
 });
 ```
 
-### 示例二：输入搜索建议请求防抖 + 顺序控制
+**示例二：输入搜索建议请求防抖 + 顺序控制**
 
 当用户快速输入时，你可能希望频繁发请求获取搜索建议，但又要避免请求乱序或重复。借助队列，我们可以确保请求是顺序执行的：
 
 ```typescript
-const searchQueue = new AsyncTaskQueue(1); // 每次仅发一个请求，顺序执行
+/** 每次仅发一个请求，顺序执行 */
+const searchQueue = new AsyncTaskQueue(1);
 
 function fetchSearchSuggestions(keyword: string) {
   return () =>
     fetch(`/api/search?q=${keyword}`)
       .then((res) => res.json())
       .then((data) => {
-        console.log("📥 搜索结果：", keyword, data);
+        console.log("搜索结果：", keyword, data);
         return data;
       });
 }
 
-// 模拟用户连续输入关键词
+/** 模拟用户连续输入关键词 */
 ["a", "ap", "app", "appl", "apple"].forEach((kw, index) => {
   setTimeout(() => {
     searchQueue.push(fetchSearchSuggestions(kw));
@@ -970,7 +902,7 @@ function fetchSearchSuggestions(keyword: string) {
 - 队列控制 + 防抖机制非常适合搜索类组件；
 - 可轻松扩展成搜索节流、缓存优化等逻辑。
 
-再进一步，我们可以依赖 `AsyncTaskQueue` 做一个并发限制控制器
+再进一步，我们可以依赖 `AsyncTaskQueue` 做一个 **并发限制控制器**。
 
 ```typescript
 import { AsyncTaskQueue } from "./async_task_queue";
@@ -978,7 +910,6 @@ import { AsyncWork } from "./async_work";
 
 type Token = AsyncWork<void>;
 
-// 并发限制器
 export class ConcurrencyLimiter {
   constructor(private options: { limit: number }) {
     this.queue = new AsyncTaskQueue(this.options.limit);
@@ -1001,3 +932,53 @@ export class ConcurrencyLimiter {
   }
 }
 ```
+
+这个限制器的核心思路是将“令牌”封装成 AsyncWork，当 acquire() 获取令牌后，任务就可以开始执行；任务完成后调用 release() 释放该令牌，允许队列中的下一个任务进入。
+
+**示例：高并发任务执行控制**
+
+```typescript
+const limiter = new ConcurrencyLimiter({ limit: 3 });
+
+async function limitedTask(id: number) {
+  /** 等待获取令牌 */
+  const token = await limiter.acquire();
+  console.log(`开始任务 ${id}`);
+
+  try {
+    /** 模拟异步操作 */
+    await new Promise((res) => setTimeout(res, 1000 + Math.random() * 1000));
+    console.log(`完成任务 ${id}`);
+
+    /** 可以在任务成功后提前释放 token */
+    limiter.release(token);
+  } finally {
+    /** finally 中作为兜底，确保任何异常情况也能释放 token */
+    limiter.release(token);
+  }
+}
+
+// 启动 10 个任务
+for (let i = 1; i <= 10; i++) {
+  limitedTask(i);
+}
+```
+
+上面的代码输出可能是这样的：
+
+```javascript
+开始任务 1
+开始任务 2
+开始任务 3
+完成任务 2
+开始任务 4
+完成任务 1
+开始任务 5
+...
+```
+
+注意看上面的输出，「开始任务」肯定是一致按顺序排，并且是穿插在「完成任务」的时间序列中的，这个毫无疑问，但是你看我故意把「完成任务 2」放在了 「完成任务 1」之前，为什么呢？
+
+因为 `ConcurrencyLimiter` 保证（控制）的是一步任务的并发，也就是说在一个任务完成后，下一个任务就可以开始了，而不是等待前一个任务完成后再开始下一个任务，这些异步任务谁先完成谁后完成者都是不确定的，那怎么实现既控制并发又控制顺序呢？
+
+我们可以直接设置 limit 为 1 即可，但是如果要实现 limit > 1 也按照顺序，那么就需要用到队列了，这里就是 `AsyncTaskQueue` 的作用了，它可以保证任务的顺序，同时控制任务的并发。
