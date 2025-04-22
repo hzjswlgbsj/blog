@@ -58,6 +58,7 @@
 - [队列](algorithm/Queue.md)
 - [栈](algorithm/Stack.md)
 - [树](algorithm/Tree.md)
+- [树的操作与运用](algorithm/树的操作与运用.md)
 - [排序算法](algorithm/Sort.md)
 
 ## 🍁 Nodejs 快速扫盲
