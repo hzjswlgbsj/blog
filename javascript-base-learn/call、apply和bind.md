@@ -233,7 +233,7 @@ Function.prototype.myApply = function (context, arr) {
 `bind()` 方法创建一个新的函数，在 `bind()` 被调用时，这个新函数的 `this` 被指定为 `bind()` 的第一个参数，而其余参数将作为新函数的参数，供调用时使用。
 
 首先明确 bind 做了什么，当然不会把规范的步骤全部模拟出来
-![image.png](https://cdn.nlark.com/yuque/0/2023/png/160765/1674872070034-94973498-ea3e-42c3-93ac-135c693262cf.png#averageHue=%23f7f7f7&clientId=uc7e3a9f8-8603-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=279&id=ub7edca34&margin=%5Bobject%20Object%5D&name=image.png&originHeight=558&originWidth=583&originalType=binary&ratio=1&rotation=0&showTitle=false&size=130804&status=done&style=none&taskId=ub4839c07-2dd2-40a4-b5ac-91b8e8b7550&title=&width=291.5)
+![image.png](https://lib.sixtyden.com/js%E4%B8%AD%E7%9A%84bind%E6%96%B9%E6%B3%95%E8%AE%BE%E8%AE%A1%E8%A7%84%E8%8C%83.png)
 
 学习主要模拟大致过程：
 
