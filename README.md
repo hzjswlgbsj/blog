@@ -29,6 +29,7 @@
 
 - [理解 JavaScript 对象](javascript-base-learn/理解JavaScript对象.md)
 - [执行上下文](javascript-base-learn/执行上下文.md)
+- [执行上下文(new)](javascript-base-learn/执行上下文(new).md)
 - [变量对象](javascript-base-learn/变量对象.md)
 - [作用域链](javascript-base-learn/作用域链.md)
 - [this 关键字](javascript-base-learn/this关键字.md)
